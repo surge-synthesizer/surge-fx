@@ -13,16 +13,11 @@
 
 //==============================================================================
 SurgefxAudioProcessor::SurgefxAudioProcessor()
-#ifndef JucePlugin_PreferredChannelConfigurations
      : AudioProcessor (BusesProperties()
-                     #if ! JucePlugin_IsMidiEffect
-                      #if ! JucePlugin_IsSynth
                        .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                      #endif
+                       .withInput  ("SideChain", AudioChannelSet::stereo(), true)
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
-                     #endif
                        )
-#endif
 {
 }
 
@@ -38,34 +33,22 @@ const String SurgefxAudioProcessor::getName() const
 
 bool SurgefxAudioProcessor::acceptsMidi() const
 {
-   #if JucePlugin_WantsMidiInput
-    return true;
-   #else
     return false;
-   #endif
 }
 
 bool SurgefxAudioProcessor::producesMidi() const
 {
-   #if JucePlugin_ProducesMidiOutput
-    return true;
-   #else
     return false;
-   #endif
 }
 
 bool SurgefxAudioProcessor::isMidiEffect() const
 {
-   #if JucePlugin_IsMidiEffect
-    return true;
-   #else
     return false;
-   #endif
 }
 
 double SurgefxAudioProcessor::getTailLengthSeconds() const
 {
-    return 0.0;
+    return 2.0;
 }
 
 int SurgefxAudioProcessor::getNumPrograms()
@@ -85,7 +68,7 @@ void SurgefxAudioProcessor::setCurrentProgram (int index)
 
 const String SurgefxAudioProcessor::getProgramName (int index)
 {
-    return {};
+    return "Default";
 }
 
 void SurgefxAudioProcessor::changeProgramName (int index, const String& newName)
@@ -95,12 +78,23 @@ void SurgefxAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void SurgefxAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
+    std::cout << "prepareToPlay" << std::endl;
+    delayRingL.resize(20000);
+    delayRingR.resize(20000);
+    for( int i=0; i<20000; ++i )
+    {
+        delayRingL[i] = 0.;
+        delayRingR[i] = 0.;
+    }
+    ringIndex = 0;
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
 void SurgefxAudioProcessor::releaseResources()
 {
+    std::cout << "releaseResources" << std::endl;
+
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
@@ -108,24 +102,13 @@ void SurgefxAudioProcessor::releaseResources()
 #ifndef JucePlugin_PreferredChannelConfigurations
 bool SurgefxAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-  #if JucePlugin_IsMidiEffect
-    ignoreUnused (layouts);
-    return true;
-  #else
     // This is the place where you check if the layout is supported.
     // In this template code we only support mono or stereo.
     if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
      && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
         return false;
 
-    // This checks if the input layout matches the output layout
-   #if ! JucePlugin_IsSynth
-    if (layouts.getMainOutputChannelSet() != layouts.getMainInputChannelSet())
-        return false;
-   #endif
-
     return true;
-  #endif
 }
 #endif
 
@@ -152,21 +135,38 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     // interleaved by keeping the same state.
     for (int channel = 0; channel < totalNumInputChannels; ++channel)
     {
+        auto* inData = buffer.getReadPointer(channel);
         auto* channelData = buffer.getWritePointer (channel);
 
-        // ..do something to the data...
+        for( auto j=0; j<buffer.getNumSamples(); ++j )
+        {
+            // I know this is stupid code
+            if( channel == 0 )
+            {
+                channelData[j] = inData[j] * 0.8 + delayRingR[ringIndex] * 0.2;
+                delayRingR[ringIndex] = channelData[j];
+            }
+            else
+            {
+                channelData[j] = inData[j] * 0.8 + delayRingL[ringIndex] * 0.2;
+                delayRingL[ringIndex] = channelData[j];
+            }
+            ringIndex ++;
+            if( ringIndex >= 20000 ) ringIndex = 0;
+        }
+
     }
 }
 
 //==============================================================================
 bool SurgefxAudioProcessor::hasEditor() const
 {
-    return true; // (change this to false if you choose to not supply an editor)
+    return false; // (change this to false if you choose to not supply an editor)
 }
 
 AudioProcessorEditor* SurgefxAudioProcessor::createEditor()
 {
-    return new SurgefxAudioProcessorEditor (*this);
+    return nullptr; // new SurgefxAudioProcessorEditor (*this);
 }
 
 //==============================================================================
