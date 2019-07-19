@@ -1,0 +1,313 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="wrl6Y0" name="surge-fx" projectType="audioplug" jucerVersion="5.4.3">
+  <MAINGROUP id="cR50fn" name="surge-fx">
+    <GROUP id="{55EE2475-B339-9B2B-B553-4D5F86AA5924}" name="surge">
+      <GROUP id="{AF603B09-893E-1A7F-FA6F-D1E37E4F550C}" name="libs">
+        <GROUP id="{2A752819-DDB0-3927-929D-EBC295D0E9F0}" name="filesystem">
+          <FILE id="KOZCaG" name="filesystem.cpp" compile="1" resource="0" file="deps/surge/libs/filesystem/filesystem.cpp"/>
+          <FILE id="vMV90B" name="filesystem.h" compile="0" resource="0" file="deps/surge/libs/filesystem/filesystem.h"/>
+        </GROUP>
+        <GROUP id="{CDB89B68-55AA-84F3-41A8-BCDC77057215}" name="wtl">
+          <FILE id="Rt9jAh" name="atlapp.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlapp.h"/>
+          <FILE id="Q3isfY" name="atlcrack.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlcrack.h"/>
+          <FILE id="vwNWPf" name="atlctrls.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlctrls.h"/>
+          <FILE id="bmdfUd" name="atlctrlw.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlctrlw.h"/>
+          <FILE id="JPV6Hj" name="atlctrlx.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlctrlx.h"/>
+          <FILE id="GrN2Ra" name="atlddx.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlddx.h"/>
+          <FILE id="zueHYj" name="atldlgs.h" compile="0" resource="0" file="deps/surge/libs/wtl/atldlgs.h"/>
+          <FILE id="J8mS0d" name="atldwm.h" compile="0" resource="0" file="deps/surge/libs/wtl/atldwm.h"/>
+          <FILE id="CRE7Tc" name="atlfind.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlfind.h"/>
+          <FILE id="tpaShJ" name="atlframe.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlframe.h"/>
+          <FILE id="j14cA6" name="atlgdi.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlgdi.h"/>
+          <FILE id="bKBLZO" name="atlmisc.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlmisc.h"/>
+          <FILE id="b0fXqL" name="atlprint.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlprint.h"/>
+          <FILE id="aMYUHU" name="atlres.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlres.h"/>
+          <FILE id="WG9w8r" name="atlresce.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlresce.h"/>
+          <FILE id="jjgnbO" name="atlribbon.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlribbon.h"/>
+          <FILE id="t0JU1f" name="atlscrl.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlscrl.h"/>
+          <FILE id="tRcxf6" name="atlsplit.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlsplit.h"/>
+          <FILE id="UaJuib" name="atltheme.h" compile="0" resource="0" file="deps/surge/libs/wtl/atltheme.h"/>
+          <FILE id="Svlzxl" name="atluser.h" compile="0" resource="0" file="deps/surge/libs/wtl/atluser.h"/>
+          <FILE id="PBUFXz" name="atlwince.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlwince.h"/>
+          <FILE id="rrm24a" name="atlwinx.h" compile="0" resource="0" file="deps/surge/libs/wtl/atlwinx.h"/>
+        </GROUP>
+        <GROUP id="{CEF51D36-92B7-6199-D645-B15318B95A06}" name="xml">
+          <FILE id="xPq9ge" name="tinystr.cpp" compile="1" resource="0" file="deps/surge/libs/xml/tinystr.cpp"/>
+          <FILE id="AFkaXx" name="tinystr.h" compile="0" resource="0" file="deps/surge/libs/xml/tinystr.h"/>
+          <FILE id="XzSrl2" name="tinyxml.cpp" compile="1" resource="0" file="deps/surge/libs/xml/tinyxml.cpp"/>
+          <FILE id="QI4X4D" name="tinyxml.h" compile="0" resource="0" file="deps/surge/libs/xml/tinyxml.h"/>
+          <FILE id="Up6IK1" name="tinyxmlerror.cpp" compile="1" resource="0"
+                file="deps/surge/libs/xml/tinyxmlerror.cpp"/>
+          <FILE id="KmlWiq" name="tinyxmlparser.cpp" compile="1" resource="0"
+                file="deps/surge/libs/xml/tinyxmlparser.cpp"/>
+        </GROUP>
+      </GROUP>
+      <GROUP id="{34ACC379-3A1C-6463-1A32-2879B49EE7EC}" name="src">
+        <GROUP id="{909CBFD9-9F71-6388-E734-BED11B251BD9}" name="common">
+          <GROUP id="{84C5EA23-FD22-EE6C-0FA4-B9D053422040}" name="dsp">
+            <GROUP id="{E9E49665-DEAE-76A7-D1DF-FF5063F6CC8F}" name="effect">
+              <FILE id="tRjUAk" name="ConditionerEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/ConditionerEffect.cpp"/>
+              <FILE id="GE5ica" name="DistortionEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/DistortionEffect.cpp"/>
+              <FILE id="SvqjeD" name="DualDelayEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/DualDelayEffect.cpp"/>
+              <FILE id="W550Xd" name="Effect.cpp" compile="1" resource="0" file="deps/surge/src/common/dsp/effect/Effect.cpp"/>
+              <FILE id="O3fOQc" name="Effect.h" compile="0" resource="0" file="deps/surge/src/common/dsp/effect/Effect.h"/>
+              <FILE id="rzTyE9" name="effect_defs.h" compile="0" resource="0" file="deps/surge/src/common/dsp/effect/effect_defs.h"/>
+              <FILE id="ua8sXD" name="FreqshiftEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/FreqshiftEffect.cpp"/>
+              <FILE id="lOwWuu" name="PhaserEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/PhaserEffect.cpp"/>
+              <FILE id="aeJ56a" name="Reverb1Effect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/Reverb1Effect.cpp"/>
+              <FILE id="qmxr2D" name="Reverb2Effect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/Reverb2Effect.cpp"/>
+              <FILE id="Q5ijID" name="RotarySpeakerEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/RotarySpeakerEffect.cpp"/>
+              <FILE id="fdR1NY" name="VocoderEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/VocoderEffect.cpp"/>
+            </GROUP>
+            <FILE id="FfQPkT" name="AdsrEnvelope.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/AdsrEnvelope.cpp"/>
+            <FILE id="mtTL6i" name="AdsrEnvelope.h" compile="0" resource="0" file="deps/surge/src/common/dsp/AdsrEnvelope.h"/>
+            <FILE id="igWhOp" name="AllpassFilter.h" compile="0" resource="0" file="deps/surge/src/common/dsp/AllpassFilter.h"/>
+            <FILE id="EfK6ZI" name="BiquadFilter.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/BiquadFilter.cpp"/>
+            <FILE id="dCmVSo" name="BiquadFilter.h" compile="0" resource="0" file="deps/surge/src/common/dsp/BiquadFilter.h"/>
+            <FILE id="a93Hwz" name="BiquadFilterSSE2.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/BiquadFilterSSE2.cpp"/>
+            <FILE id="mNaOEh" name="DspUtilities.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/DspUtilities.cpp"/>
+            <FILE id="mUQrlp" name="DspUtilities.h" compile="0" resource="0" file="deps/surge/src/common/dsp/DspUtilities.h"/>
+            <FILE id="ciKr5x" name="FilterCoefficientMaker.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/FilterCoefficientMaker.cpp"/>
+            <FILE id="RlAFmM" name="FilterCoefficientMaker.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/FilterCoefficientMaker.h"/>
+            <FILE id="L78btt" name="FMOscillator.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/FMOscillator.cpp"/>
+            <FILE id="J5yW9x" name="HalfrateFilter.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/HalfrateFilter.h"/>
+            <FILE id="ZCRP9P" name="LfoModulationSource.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/LfoModulationSource.cpp"/>
+            <FILE id="GxpzVT" name="LfoModulationSource.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/LfoModulationSource.h"/>
+            <FILE id="qfRYBr" name="Oscillator.cpp" compile="1" resource="0" file="deps/surge/src/common/dsp/Oscillator.cpp"/>
+            <FILE id="Ijm6w9" name="Oscillator.h" compile="0" resource="0" file="deps/surge/src/common/dsp/Oscillator.h"/>
+            <FILE id="cYB1L4" name="QuadFilterChain.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/QuadFilterChain.cpp"/>
+            <FILE id="jmYz5R" name="QuadFilterChain.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/QuadFilterChain.h"/>
+            <FILE id="flIxUT" name="QuadFilterUnit.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/QuadFilterUnit.cpp"/>
+            <FILE id="SdeFbH" name="QuadFilterUnit.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/QuadFilterUnit.h"/>
+            <FILE id="lEpP1X" name="SampleAndHoldOscillator.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/SampleAndHoldOscillator.cpp"/>
+            <FILE id="UC2OI0" name="SurgeSuperOscillator.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/SurgeSuperOscillator.cpp"/>
+            <FILE id="psKL7j" name="SurgeVoice.cpp" compile="1" resource="0" file="deps/surge/src/common/dsp/SurgeVoice.cpp"/>
+            <FILE id="SySfVP" name="SurgeVoice.h" compile="0" resource="0" file="deps/surge/src/common/dsp/SurgeVoice.h"/>
+            <FILE id="fY3U0v" name="SurgeVoiceState.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/SurgeVoiceState.h"/>
+            <FILE id="OuhEah" name="VectorizedSvfFilter.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/VectorizedSvfFilter.cpp"/>
+            <FILE id="k2cBEU" name="VectorizedSvfFilter.h" compile="0" resource="0"
+                  file="deps/surge/src/common/dsp/VectorizedSvfFilter.h"/>
+            <FILE id="BUXgEg" name="Wavetable.cpp" compile="1" resource="0" file="deps/surge/src/common/dsp/Wavetable.cpp"/>
+            <FILE id="HeN1Ve" name="Wavetable.h" compile="0" resource="0" file="deps/surge/src/common/dsp/Wavetable.h"/>
+            <FILE id="AMH4Sp" name="WavetableOscillator.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/WavetableOscillator.cpp"/>
+            <FILE id="lhaZUv" name="WindowOscillator.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/dsp/WindowOscillator.cpp"/>
+          </GROUP>
+          <GROUP id="{9F89AB65-50F2-F4BE-4237-6AB95F05E1FE}" name="thread">
+            <FILE id="VODYno" name="CriticalSection.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/thread/CriticalSection.cpp"/>
+            <FILE id="a0OqFk" name="CriticalSection.h" compile="0" resource="0"
+                  file="deps/surge/src/common/thread/CriticalSection.h"/>
+          </GROUP>
+          <GROUP id="{1F337BC4-414C-05F8-8D81-050B3452B85A}" name="util">
+            <FILE id="XAwXEB" name="FpuState.cpp" compile="1" resource="0" file="deps/surge/src/common/util/FpuState.cpp"/>
+            <FILE id="W3aQfr" name="FpuState.h" compile="0" resource="0" file="deps/surge/src/common/util/FpuState.h"/>
+          </GROUP>
+          <GROUP id="{59BD96F2-3095-BB04-F1A1-25A8DB887C3F}" name="vt_dsp">
+            <FILE id="TTrwsD" name="basic_dsp.cpp" compile="1" resource="0" file="deps/surge/src/common/vt_dsp/basic_dsp.cpp"/>
+            <FILE id="u46aIy" name="basic_dsp.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/basic_dsp.h"/>
+            <FILE id="ZkSlIg" name="halfratefilter.cpp" compile="1" resource="0"
+                  file="deps/surge/src/common/vt_dsp/halfratefilter.cpp"/>
+            <FILE id="c8DKu5" name="halfratefilter.h" compile="0" resource="0"
+                  file="deps/surge/src/common/vt_dsp/halfratefilter.h"/>
+            <FILE id="Nn4vKO" name="lipol.cpp" compile="1" resource="0" file="deps/surge/src/common/vt_dsp/lipol.cpp"/>
+            <FILE id="eqahtm" name="lipol.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/lipol.h"/>
+            <FILE id="U6QNzc" name="macspecific.cpp" compile="1" resource="0" file="deps/surge/src/common/vt_dsp/macspecific.cpp"/>
+            <FILE id="DECuF6" name="macspecific.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/macspecific.h"/>
+            <FILE id="VhQa6q" name="obsolete.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/obsolete.h"/>
+            <FILE id="Gcvbiu" name="portable_intrinsics.h" compile="0" resource="0"
+                  file="deps/surge/src/common/vt_dsp/portable_intrinsics.h"/>
+            <FILE id="OTLGkW" name="shared.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/shared.h"/>
+            <FILE id="SqsjrF" name="vt_dsp.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/vt_dsp.h"/>
+            <FILE id="C1NU87" name="vt_dsp_endian.h" compile="0" resource="0" file="deps/surge/src/common/vt_dsp/vt_dsp_endian.h"/>
+          </GROUP>
+          <FILE id="VmCAXo" name="globals.h" compile="0" resource="0" file="deps/surge/src/common/globals.h"/>
+          <FILE id="GEB09S" name="ModulationSource.h" compile="0" resource="0"
+                file="deps/surge/src/common/ModulationSource.h"/>
+          <FILE id="JwuDlS" name="Parameter.cpp" compile="1" resource="0" file="deps/surge/src/common/Parameter.cpp"/>
+          <FILE id="MuIalV" name="Parameter.h" compile="0" resource="0" file="deps/surge/src/common/Parameter.h"/>
+          <FILE id="YGUB4p" name="precompiled.cpp" compile="1" resource="0" file="deps/surge/src/common/precompiled.cpp"/>
+          <FILE id="MsfFx8" name="precompiled.h" compile="0" resource="0" file="deps/surge/src/common/precompiled.h"/>
+          <FILE id="TGpAeL" name="resource.h" compile="0" resource="0" file="deps/surge/src/common/resource.h"/>
+          <FILE id="mVwo8V" name="Sample.cpp" compile="1" resource="0" file="deps/surge/src/common/Sample.cpp"/>
+          <FILE id="DvpUyz" name="Sample.h" compile="0" resource="0" file="deps/surge/src/common/Sample.h"/>
+          <FILE id="JXWQvK" name="SampleLoadRiffWave.cpp" compile="1" resource="0"
+                file="deps/surge/src/common/SampleLoadRiffWave.cpp"/>
+          <FILE id="nQq5Mf" name="surge_auversion.h" compile="0" resource="0"
+                file="deps/surge/src/common/surge_auversion.h"/>
+          <FILE id="XzSdsi" name="SurgeError.cpp" compile="1" resource="0" file="deps/surge/src/common/SurgeError.cpp"/>
+          <FILE id="XHB4m3" name="SurgeError.h" compile="0" resource="0" file="deps/surge/src/common/SurgeError.h"/>
+          <FILE id="YLnUAk" name="SurgeParamConfig.h" compile="0" resource="0"
+                file="deps/surge/src/common/SurgeParamConfig.h"/>
+          <FILE id="XLhltJ" name="SurgePatch.cpp" compile="1" resource="0" file="deps/surge/src/common/SurgePatch.cpp"/>
+          <FILE id="nYlZWL" name="SurgeStorage.cpp" compile="1" resource="0"
+                file="deps/surge/src/common/SurgeStorage.cpp"/>
+          <FILE id="uTHTbG" name="SurgeStorage.h" compile="0" resource="0" file="deps/surge/src/common/SurgeStorage.h"/>
+          <FILE id="kHnfua" name="SurgeStorageLoadWavetable.cpp" compile="1"
+                resource="0" file="deps/surge/src/common/SurgeStorageLoadWavetable.cpp"/>
+          <FILE id="CFJULs" name="SurgeSynthesizer.cpp" compile="1" resource="0"
+                file="deps/surge/src/common/SurgeSynthesizer.cpp"/>
+          <FILE id="OL8oJ2" name="SurgeSynthesizer.h" compile="0" resource="0"
+                file="deps/surge/src/common/SurgeSynthesizer.h"/>
+          <FILE id="EWBeKH" name="SurgeSynthesizerIO.cpp" compile="1" resource="0"
+                file="deps/surge/src/common/SurgeSynthesizerIO.cpp"/>
+          <FILE id="Rqxk2c" name="Tunings.cpp" compile="1" resource="0" file="deps/surge/src/common/Tunings.cpp"/>
+          <FILE id="WXh7WR" name="Tunings.h" compile="0" resource="0" file="deps/surge/src/common/Tunings.h"/>
+          <FILE id="Rvzhhw" name="unitconversion.h" compile="0" resource="0"
+                file="deps/surge/src/common/unitconversion.h"/>
+          <FILE id="gSfbgM" name="UserDefaults.cpp" compile="1" resource="0"
+                file="deps/surge/src/common/UserDefaults.cpp"/>
+          <FILE id="dsX3Wu" name="UserDefaults.h" compile="0" resource="0" file="deps/surge/src/common/UserDefaults.h"/>
+          <FILE id="GaaHIU" name="UserInteractions.h" compile="0" resource="0"
+                file="deps/surge/src/common/UserInteractions.h"/>
+          <FILE id="FOTJye" name="version.h" compile="0" resource="0" file="deps/surge/src/common/version.h"/>
+        </GROUP>
+        <GROUP id="{664DD30A-8480-9AE6-4699-CB5626CBAB01}" name="headless">
+          <FILE id="jQ8i3S" name="HeadlessPluginLayerProxy.h" compile="0" resource="0"
+                file="deps/surge/src/headless/HeadlessPluginLayerProxy.h"/>
+          <FILE id="uk6QP2" name="HeadlessUtils.cpp" compile="1" resource="0"
+                file="deps/surge/src/headless/HeadlessUtils.cpp"/>
+          <FILE id="rrTsfe" name="HeadlessUtils.h" compile="0" resource="0" file="deps/surge/src/headless/HeadlessUtils.h"/>
+          <FILE id="lHbMWJ" name="LinkFixesHeadless.cpp" compile="1" resource="0"
+                file="deps/surge/src/headless/LinkFixesHeadless.cpp"/>
+          <FILE id="ag8MP6" name="main.cpp" compile="1" resource="0" file="deps/surge/src/headless/main.cpp"/>
+          <FILE id="uV83mC" name="Player.cpp" compile="1" resource="0" file="deps/surge/src/headless/Player.cpp"/>
+          <FILE id="EaclVs" name="Player.h" compile="0" resource="0" file="deps/surge/src/headless/Player.h"/>
+          <FILE id="QtN9dO" name="Stress.cpp" compile="1" resource="0" file="deps/surge/src/headless/Stress.cpp"/>
+          <FILE id="P6mnAB" name="Stress.h" compile="0" resource="0" file="deps/surge/src/headless/Stress.h"/>
+          <FILE id="MFKMQS" name="UserInteractionsHeadless.cpp" compile="1" resource="0"
+                file="deps/surge/src/headless/UserInteractionsHeadless.cpp"/>
+        </GROUP>
+      </GROUP>
+    </GROUP>
+    <GROUP id="{817258CB-25E0-B1C8-CB37-3CBF4C3A5385}" name="src">
+      <FILE id="y9FKUl" name="SurgeFXProcessor.cpp" compile="1" resource="0"
+            file="src/SurgeFXProcessor.cpp"/>
+      <FILE id="qg4XEX" name="SurgeFXProcessor.h" compile="0" resource="0"
+            file="src/SurgeFXProcessor.h"/>
+      <FILE id="b3OMWY" name="SurgeFXEditor.cpp" compile="1" resource="0"
+            file="src/SurgeFXEditor.cpp"/>
+      <FILE id="aupIjz" name="SurgeFXEditor.h" compile="0" resource="0" file="src/SurgeFXEditor.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" vst3Folder="deps/surge/vst3sdk"
+               extraCompilerFlags="-DMAC=1 -DTARGET_HEADLESS=1 -I../../deps/surge/src/common -I../../deps/surge/src/common/dsp -I../../deps/surge/src/common/dsp/effects&#10;-I../../deps/surge/libs/xml -I../../deps/surge/libs/filesystem&#10;-I../../deps/surge/src/headless -Wno-c++17-extensions -D_aligned_malloc(x,a)=malloc(x) -D_aligned_free(x)=free(x)">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="./assets/JUCE/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+    <VS2017 targetFolder="Builds/VisualStudio2017">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="./assets/JUCE/modules"/>
+      </MODULEPATHS>
+    </VS2017>
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+      <CONFIGURATIONS>
+        <CONFIGURATION isDebug="1" name="Debug"/>
+        <CONFIGURATION isDebug="0" name="Release"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_audio_basics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_audio_utils" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_core" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_cryptography" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_data_structures" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_events" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_graphics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="./assets/JUCE/modules"/>
+        <MODULEPATH id="juce_opengl" path="./assets/JUCE/modules"/>
+      </MODULEPATHS>
+    </LINUX_MAKE>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="0"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_audio_utils" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="0"/>
+  </MODULES>
+  <LIVE_SETTINGS>
+    <OSX/>
+  </LIVE_SETTINGS>
+  <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"
+               JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_VST="0"/>
+</JUCERPROJECT>

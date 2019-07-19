@@ -1,0 +1,4 @@
+[submodule "deps/surge"]
+	path = deps/surge
+	url = https://github.com/surge-synthesizer/surge.git
+
