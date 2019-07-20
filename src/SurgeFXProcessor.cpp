@@ -136,6 +136,9 @@ bool SurgefxAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 }
 #endif
 
+#define is_aligned(POINTER, BYTE_COUNT) \
+    (((uintptr_t)(const void *)(POINTER)) % (BYTE_COUNT) == 0)
+
 void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
@@ -172,32 +175,43 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     
     for(int outPos = 0; outPos < buffer.getNumSamples(); outPos += BLOCK_SIZE )
     {
-        auto inL = mainInputOutput.getReadPointer(0, outPos);
-        auto inR = mainInputOutput.getReadPointer(1, outPos);
-
         auto outL = mainInputOutput.getWritePointer(0, outPos);
         auto outR = mainInputOutput.getWritePointer(1, outPos);
 
-        auto sideL = sideChainInput.getReadPointer(0, outPos);
-        auto sideR = sideChainInput.getReadPointer(1, outPos);
+        if( effectNum == fxt_vocoder )
+        {
+            auto sideL = sideChainInput.getReadPointer(0, outPos);
+            auto sideR = sideChainInput.getReadPointer(1, outPos);
+            
+            memcpy(storage->audio_in_nonOS[0], sideL, BLOCK_SIZE * sizeof(float));
+            memcpy(storage->audio_in_nonOS[1], sideR, BLOCK_SIZE * sizeof(float));
+        }
         
-        float bufferL alignas(16)[BLOCK_SIZE], bufferR alignas(16)[BLOCK_SIZE];
-
-        memcpy(bufferL, inL, BLOCK_SIZE * sizeof(float));
-        memcpy(bufferR, inR, BLOCK_SIZE * sizeof(float));
-        memcpy(storage->audio_in_nonOS[0], sideL, BLOCK_SIZE * sizeof(float));
-        memcpy(storage->audio_in_nonOS[1], sideR, BLOCK_SIZE * sizeof(float));
-
         for( int i=0; i<n_fx_params; ++i )
         {
             fxstorage->p[fx_param_remap[i]].set_value_f01(*(fxParams[i]));
         }
         copyGlobaldataSubset(storage_id_start, storage_id_end);
 
-        surge_effect->process(bufferL, bufferR);
-        
-        memcpy(outL, bufferL, BLOCK_SIZE * sizeof(float));
-        memcpy(outR, bufferR, BLOCK_SIZE * sizeof(float));
+        if( is_aligned(outL, 16) && is_aligned( outR, 16 ) )
+        {
+            surge_effect->process(outL, outR );
+        }
+        else
+        {
+            float bufferL alignas(16)[BLOCK_SIZE], bufferR alignas(16)[BLOCK_SIZE];
+
+            auto inL = mainInputOutput.getReadPointer(0, outPos);
+            auto inR = mainInputOutput.getReadPointer(1, outPos);
+
+            memcpy(bufferL, inL, BLOCK_SIZE * sizeof(float));
+            memcpy(bufferR, inR, BLOCK_SIZE * sizeof(float));
+            
+            surge_effect->process(bufferL, bufferR);
+            
+            memcpy(outL, bufferL, BLOCK_SIZE * sizeof(float));
+            memcpy(outR, bufferR, BLOCK_SIZE * sizeof(float));
+        }
     }
 }
 
