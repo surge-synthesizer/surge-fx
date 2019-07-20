@@ -22,16 +22,6 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
     int effectNum = fxt_delay;
     storage.reset( new SurgeStorage() );
 
-    // FIXME obvs
-    float sr = 44100.0;
-    samplerate = sr;
-    dsamplerate = sr;
-    samplerate_inv = 1.0 / sr;
-    dsamplerate_inv = 1.0 / sr;
-    dsamplerate_os = dsamplerate * OSC_OVERSAMPLING;
-    dsamplerate_os_inv = 1.0 / dsamplerate_os;
-    storage->init_tables();
-
     fxstorage = &(storage->getPatch().fx[0]);
     fxstorage->type.val.i = effectNum;
     surge_effect.reset(spawn_effect(effectNum, storage.get(),
@@ -114,10 +104,17 @@ void SurgefxAudioProcessor::changeProgramName (int index, const String& newName)
 }
 
 //==============================================================================
-void SurgefxAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
+void SurgefxAudioProcessor::prepareToPlay (double sr, int samplesPerBlock)
 {
-    // Use this method as the place to do any pre-playback
-    // initialisation that you need..
+    samplerate = sr;
+    dsamplerate = sr;
+    samplerate_inv = 1.0 / sr;
+    dsamplerate_inv = 1.0 / sr;
+    dsamplerate_os = dsamplerate * OSC_OVERSAMPLING;
+    dsamplerate_os_inv = 1.0 / dsamplerate_os;
+    storage->init_tables();
+
+    // FIXME - assert samplesPerBlock is a multiple of BLOCK_SIZE
 }
 
 void SurgefxAudioProcessor::releaseResources()
@@ -148,8 +145,14 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     auto mainInputOutput = getBusBuffer(buffer, true, 0);
     auto sideChainInput = getBusBuffer(buffer, true, 1);
 
+    // FIXME: We can do better than this
+    if( mainInputOutput.getNumChannels() != 2 )
+    {
+        // We only really work in stereo so
+        return;
+    }
+    
     // FIXME: Check: has type changed?
-    // FIXME: assert samples is an integer multiple of block size
     for(int outPos = 0; outPos < buffer.getNumSamples(); outPos += BLOCK_SIZE )
     {
         auto inL = mainInputOutput.getReadPointer(0, outPos);
