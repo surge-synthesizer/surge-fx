@@ -19,6 +19,8 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                        )
 {
+    addParameter(mix = new AudioParameterFloat("mix", "Mix", 0.f, 1.f, 0.2f));
+    addParameter(feedback = new AudioParameterFloat("feedback", "Feedback", 0.f, 1.f, 0.7f));
 }
 
 SurgefxAudioProcessor::~SurgefxAudioProcessor()
@@ -141,15 +143,17 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         for( auto j=0; j<buffer.getNumSamples(); ++j )
         {
             // I know this is stupid code
+            float m = *mix;
+            float f = *feedback;
             if( channel == 0 )
             {
-                channelData[j] = inData[j] * 0.8 + delayRingR[ringIndex] * 0.2;
-                delayRingR[ringIndex] = channelData[j];
+                channelData[j] = inData[j] * (1.f-m)  + delayRingR[ringIndex] * m;
+                delayRingR[ringIndex] = inData[j] * (1-f) + delayRingR[ringIndex] * f;;
             }
             else
             {
-                channelData[j] = inData[j] * 0.8 + delayRingL[ringIndex] * 0.2;
-                delayRingL[ringIndex] = channelData[j];
+                channelData[j] = inData[j] * (1.f-m)  + delayRingL[ringIndex] * m;
+                delayRingL[ringIndex] = inData[j] * (1-f) + delayRingL[ringIndex] * f;;
             }
             ringIndex ++;
             if( ringIndex >= 20000 ) ringIndex = 0;
