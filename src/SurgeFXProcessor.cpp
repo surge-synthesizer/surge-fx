@@ -19,15 +19,15 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
                        .withInput  ("SideChain", AudioChannelSet::stereo())
                        )
 {
-    int effectNum = fxt_delay;
+    effectNum = fxt_delay;
     storage.reset( new SurgeStorage() );
 
     fxstorage = &(storage->getPatch().fx[0]);
     fxstorage->type.val.i = effectNum;
+
     surge_effect.reset(spawn_effect(effectNum, storage.get(),
                                     &(storage->getPatch().fx[0]),
                                     storage->getPatch().globaldata));
-
     surge_effect->init();
     surge_effect->init_ctrltypes();
     surge_effect->init_default_values();
@@ -139,8 +139,6 @@ bool SurgefxAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    time += 1.0 * buffer.getNumSamples() / 44100;
-    if( time > 2.0) time -= 2.0;
 
     auto mainInputOutput = getBusBuffer(buffer, true, 0);
     auto sideChainInput = getBusBuffer(buffer, true, 1);
@@ -153,6 +151,25 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     }
     
     // FIXME: Check: has type changed?
+    if( effectNum != *fxTypeParam )
+    {
+        std::cout << "Changing effect num" << std::endl;
+        effectNum = *fxTypeParam;
+        surge_effect.reset(spawn_effect(effectNum, storage.get(),
+                                        &(storage->getPatch().fx[0]),
+                                        storage->getPatch().globaldata));
+        surge_effect->init();
+        surge_effect->init_ctrltypes();
+        surge_effect->init_default_values();
+
+        reorderSurgeParams();
+    
+        for( int i=0; i<n_fx_params; ++i )
+        {
+            *fxParams[i] = fxstorage->p[fx_param_remap[i]].get_value_f01();
+        }
+    }
+    
     for(int outPos = 0; outPos < buffer.getNumSamples(); outPos += BLOCK_SIZE )
     {
         auto inL = mainInputOutput.getReadPointer(0, outPos);
@@ -178,15 +195,6 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         copyGlobaldataSubset(storage_id_start, storage_id_end);
 
         surge_effect->process(bufferL, bufferR);
-#if 0        
-        float t0 = time;
-        if( t0 > 1 ) t0 = 2 - t0;
-        for( int i=0; i<BLOCK_SIZE; ++i )
-        {
-            bufferL[i] = bufferL[i] * t0;
-            bufferR[i] = bufferR[i] * ( 1.0 - t0 );
-        }
-#endif
         
         memcpy(outL, bufferL, BLOCK_SIZE * sizeof(float));
         memcpy(outR, bufferR, BLOCK_SIZE * sizeof(float));

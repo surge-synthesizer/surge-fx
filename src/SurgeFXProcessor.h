@@ -68,10 +68,10 @@ private:
     FxStorage *fxstorage;
     int storage_id_start, storage_id_end;
 
+    int effectNum;
+    
     int fx_param_remap[n_fx_params];
     std::string group_names[n_fx_params];
-
-    double time = 0;
     
     void reorderSurgeParams();
     void copyGlobaldataSubset(int start, int end);
