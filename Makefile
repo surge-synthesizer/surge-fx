@@ -23,8 +23,14 @@ Builds/MacOSX/build/Release/libsurge-fx.a: Builds/MacOSX/surge-fx.xcodeproj/proj
 build:	Builds/MacOSX/surge-fx.xcodeproj/projects.pbxproj 
 	xcodebuild build -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj
 
-validate:	build
+build-au:	Builds/MacOSX/surge-fx.xcodeproj/projects.pbxproj 
+	xcodebuild build -target "surge-fx - AU" -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj
+
+validate:	build-au
 	auval -vt aufx VmbA
+
+validate-dbg:	build-au
+	lldb -- auval -vt aufx VmbA
 
 clean:
 	xcodebuild clean -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj

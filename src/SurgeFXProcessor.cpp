@@ -14,13 +14,49 @@
 //==============================================================================
 SurgefxAudioProcessor::SurgefxAudioProcessor()
      : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
-                       .withInput  ("SideChain", AudioChannelSet::stereo(), true)
-                       .withOutput ("Output", AudioChannelSet::stereo(), true)
+                       .withInput  ("Input",  AudioChannelSet::stereo())
+                       .withOutput ("Output", AudioChannelSet::stereo())
+                       .withInput  ("SideChain", AudioChannelSet::stereo())
                        )
 {
-    addParameter(mix = new AudioParameterFloat("mix", "Mix", 0.f, 1.f, 0.2f));
-    addParameter(feedback = new AudioParameterFloat("feedback", "Feedback", 0.f, 1.f, 0.7f));
+    int effectNum = fxt_delay;
+    storage.reset( new SurgeStorage() );
+
+    // FIXME obvs
+    float sr = 44100.0;
+    samplerate = sr;
+    dsamplerate = sr;
+    samplerate_inv = 1.0 / sr;
+    dsamplerate_inv = 1.0 / sr;
+    dsamplerate_os = dsamplerate * OSC_OVERSAMPLING;
+    dsamplerate_os_inv = 1.0 / dsamplerate_os;
+    storage->init_tables();
+
+    fxstorage = &(storage->getPatch().fx[0]);
+    fxstorage->type.val.i = effectNum;
+    surge_effect.reset(spawn_effect(effectNum, storage.get(),
+                                    &(storage->getPatch().fx[0]),
+                                    storage->getPatch().globaldata));
+
+    surge_effect->init();
+    surge_effect->init_ctrltypes();
+    surge_effect->init_default_values();
+
+    reorderSurgeParams();
+    
+    fxstorage->return_level.id = -1;
+    setupStorageRanges((Parameter *)fxstorage, &(fxstorage->p[n_fx_params-1]));
+    std::cout << "Storage Ranges are " << storage_id_start << " to " << storage_id_end << std::endl;
+    
+    addParameter(fxTypeParam = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, fxt_delay ));
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        char lb[256], nm[256];
+        snprintf(lb, 256, "fx_parm_%d", i );
+        snprintf(nm, 256, "FX Parameter %d", i );
+        
+        addParameter(fxParams[i] = new AudioParameterFloat(lb, nm, 0.f, 1.f, fxstorage->p[fx_param_remap[i]].get_value_f01() ) );
+    }
 }
 
 SurgefxAudioProcessor::~SurgefxAudioProcessor()
@@ -80,23 +116,12 @@ void SurgefxAudioProcessor::changeProgramName (int index, const String& newName)
 //==============================================================================
 void SurgefxAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
-    std::cout << "prepareToPlay" << std::endl;
-    delayRingL.resize(20000);
-    delayRingR.resize(20000);
-    for( int i=0; i<20000; ++i )
-    {
-        delayRingL[i] = 0.;
-        delayRingR[i] = 0.;
-    }
-    ringIndex = 0;
     // Use this method as the place to do any pre-playback
     // initialisation that you need..
 }
 
 void SurgefxAudioProcessor::releaseResources()
 {
-    std::cout << "releaseResources" << std::endl;
-
     // When playback stops, you can use this as an opportunity to free up any
     // spare memory, etc.
 }
@@ -117,48 +142,51 @@ bool SurgefxAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
     ScopedNoDenormals noDenormals;
-    auto totalNumInputChannels  = getTotalNumInputChannels();
-    auto totalNumOutputChannels = getTotalNumOutputChannels();
+    time += 1.0 * buffer.getNumSamples() / 44100;
+    if( time > 2.0) time -= 2.0;
 
-    // In case we have more outputs than inputs, this code clears any output
-    // channels that didn't contain input data, (because these aren't
-    // guaranteed to be empty - they may contain garbage).
-    // This is here to avoid people getting screaming feedback
-    // when they first compile a plugin, but obviously you don't need to keep
-    // this code if your algorithm always overwrites all the output channels.
-    for (auto i = totalNumInputChannels; i < totalNumOutputChannels; ++i)
-        buffer.clear (i, 0, buffer.getNumSamples());
+    auto mainInputOutput = getBusBuffer(buffer, true, 0);
+    auto sideChainInput = getBusBuffer(buffer, true, 1);
 
-    // This is the place where you'd normally do the guts of your plugin's
-    // audio processing...
-    // Make sure to reset the state if your inner loop is processing
-    // the samples and the outer loop is handling the channels.
-    // Alternatively, you can process the samples with the channels
-    // interleaved by keeping the same state.
-    for (int channel = 0; channel < totalNumInputChannels; ++channel)
+    // FIXME: Check: has type changed?
+    // FIXME: assert samples is an integer multiple of block size
+    for(int outPos = 0; outPos < buffer.getNumSamples(); outPos += BLOCK_SIZE )
     {
-        auto* inData = buffer.getReadPointer(channel);
-        auto* channelData = buffer.getWritePointer (channel);
+        auto inL = mainInputOutput.getReadPointer(0, outPos);
+        auto inR = mainInputOutput.getReadPointer(1, outPos);
 
-        for( auto j=0; j<buffer.getNumSamples(); ++j )
+        auto outL = mainInputOutput.getWritePointer(0, outPos);
+        auto outR = mainInputOutput.getWritePointer(1, outPos);
+
+        auto sideL = sideChainInput.getReadPointer(0, outPos);
+        auto sideR = sideChainInput.getReadPointer(1, outPos);
+        
+        float bufferL alignas(16)[BLOCK_SIZE], bufferR alignas(16)[BLOCK_SIZE];
+
+        memcpy(bufferL, inL, BLOCK_SIZE * sizeof(float));
+        memcpy(bufferR, inR, BLOCK_SIZE * sizeof(float));
+        memcpy(storage->audio_in_nonOS[0], sideL, BLOCK_SIZE * sizeof(float));
+        memcpy(storage->audio_in_nonOS[1], sideR, BLOCK_SIZE * sizeof(float));
+
+        for( int i=0; i<n_fx_params; ++i )
         {
-            // I know this is stupid code
-            float m = *mix;
-            float f = *feedback;
-            if( channel == 0 )
-            {
-                channelData[j] = inData[j] * (1.f-m)  + delayRingR[ringIndex] * m;
-                delayRingR[ringIndex] = inData[j] * (1-f) + delayRingR[ringIndex] * f;;
-            }
-            else
-            {
-                channelData[j] = inData[j] * (1.f-m)  + delayRingL[ringIndex] * m;
-                delayRingL[ringIndex] = inData[j] * (1-f) + delayRingL[ringIndex] * f;;
-            }
-            ringIndex ++;
-            if( ringIndex >= 20000 ) ringIndex = 0;
+            fxstorage->p[fx_param_remap[i]].set_value_f01(*(fxParams[i]));
         }
+        copyGlobaldataSubset(storage_id_start, storage_id_end);
 
+        surge_effect->process(bufferL, bufferR);
+#if 0        
+        float t0 = time;
+        if( t0 > 1 ) t0 = 2 - t0;
+        for( int i=0; i<BLOCK_SIZE; ++i )
+        {
+            bufferL[i] = bufferL[i] * t0;
+            bufferR[i] = bufferR[i] * ( 1.0 - t0 );
+        }
+#endif
+        
+        memcpy(outL, bufferL, BLOCK_SIZE * sizeof(float));
+        memcpy(outR, bufferR, BLOCK_SIZE * sizeof(float));
     }
 }
 
@@ -187,9 +215,82 @@ void SurgefxAudioProcessor::setStateInformation (const void* data, int sizeInByt
     // whose contents will have been created by the getStateInformation() call.
 }
 
+void SurgefxAudioProcessor::reorderSurgeParams() {
+    if (surge_effect.get()) {
+        for(auto i=0; i<n_fx_params; ++i )
+            fx_param_remap[i] = 0;
+        
+        std::vector<std::pair<int, int>> orderTrack;
+        for (auto i = 0; i < n_fx_params; ++i) {
+            if (fxstorage->p[i].posy_offset) {
+                orderTrack.push_back(std::pair<int, int>(
+                                         i, i * 2 + fxstorage->p[i].posy_offset));
+            } else {
+                orderTrack.push_back(std::pair<int, int>(i, 10000));
+            }
+        }
+        std::sort(
+            orderTrack.begin(), orderTrack.end(),
+            [](const std::pair<int, int> &a, const std::pair<int, int> &b) {
+                return a.second < b.second;
+            });
+
+        int idx = 0;
+        for (auto a : orderTrack) {
+            fx_param_remap[idx++] = a.first;
+        }
+    }
+    
+    // I hate having to use this API so much...
+    for (auto i = 0; i < n_fx_params; ++i) {
+        int fpos = fxstorage->p[fx_param_remap[i]].posy +
+            10 * fxstorage->p[fx_param_remap[i]].posy_offset;
+        for (auto j = 0; j < n_fx_params; ++j) {
+            if (surge_effect->group_label(j) &&
+                162 + 8 + 10 * surge_effect->group_label_ypos(j) <
+                fpos // constants for SurgeGUIEditor. Sigh.
+                ) {
+                group_names[i] = surge_effect->group_label(j);
+            }
+        }
+    }
+
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        std::cout << i << " " << fx_param_remap[i] << " " << group_names[i] << " "
+                  << fxstorage->p[fx_param_remap[i]].get_name() << std::endl;
+    }
+}
+
+void SurgefxAudioProcessor::copyGlobaldataSubset(int start, int end) {
+    for(int i=start; i<end; ++i )
+    {
+        storage->getPatch().globaldata[i].i =
+            storage->getPatch().param_ptr[i]->val.i;
+    }
+}
+
+void SurgefxAudioProcessor::setupStorageRanges(Parameter *start, Parameter *endIncluding) {
+    int min_id = 100000, max_id = -1;
+    Parameter *oap = start;
+    while( oap <= endIncluding )
+    {
+        if( oap->id >= 0 )
+        {
+            if( oap->id > max_id ) max_id = oap->id;
+            if( oap->id < min_id ) min_id = oap->id;
+        }
+        oap++;
+    }
+    
+    storage_id_start = min_id;
+    storage_id_end = max_id + 1;
+}
+
 //==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()
 {
     return new SurgefxAudioProcessor();
 }
+
