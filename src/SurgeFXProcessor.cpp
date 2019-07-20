@@ -14,12 +14,12 @@
 //==============================================================================
 SurgefxAudioProcessor::SurgefxAudioProcessor()
      : AudioProcessor (BusesProperties()
-                       .withInput  ("Input",  AudioChannelSet::stereo())
-                       .withOutput ("Output", AudioChannelSet::stereo())
-                       .withInput  ("SideChain", AudioChannelSet::stereo())
+                       .withInput  ("Input",  AudioChannelSet::stereo(), true)
+                       .withOutput ("Output", AudioChannelSet::stereo(), true)
+                       .withInput  ("Sidechain", AudioChannelSet::stereo(), true)
                        )
 {
-    effectNum = fxt_delay;
+    effectNum = fxt_vocoder;
     storage.reset( new SurgeStorage() );
 
     fxstorage = &(storage->getPatch().fx[0]);
@@ -38,7 +38,7 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
     setupStorageRanges((Parameter *)fxstorage, &(fxstorage->p[n_fx_params-1]));
     std::cout << "Storage Ranges are " << storage_id_start << " to " << storage_id_end << std::endl;
     
-    addParameter(fxTypeParam = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, fxt_delay ));
+    addParameter(fxTypeParam = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, effectNum ));
     for( int i=0; i<n_fx_params; ++i )
     {
         char lb[256], nm[256];
@@ -123,18 +123,13 @@ void SurgefxAudioProcessor::releaseResources()
     // spare memory, etc.
 }
 
-#ifndef JucePlugin_PreferredChannelConfigurations
 bool SurgefxAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) const
 {
-    // This is the place where you check if the layout is supported.
-    // In this template code we only support mono or stereo.
-    if (layouts.getMainOutputChannelSet() != AudioChannelSet::mono()
-     && layouts.getMainOutputChannelSet() != AudioChannelSet::stereo())
-        return false;
-
-    return true;
+    // the sidechain can take any layout, the main bus needs to be the same on the input and output
+    return layouts.getMainInputChannelSet() == layouts.getMainOutputChannelSet()
+        && ! layouts.getMainInputChannelSet().isDisabled()
+        && layouts.getMainInputChannelSet() == AudioChannelSet::stereo();
 }
-#endif
 
 #define is_aligned(POINTER, BYTE_COUNT) \
     (((uintptr_t)(const void *)(POINTER)) % (BYTE_COUNT) == 0)
@@ -146,17 +141,9 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     auto mainInputOutput = getBusBuffer(buffer, true, 0);
     auto sideChainInput = getBusBuffer(buffer, true, 1);
 
-    // FIXME: We can do better than this
-    if( mainInputOutput.getNumChannels() != 2 )
-    {
-        // We only really work in stereo so
-        return;
-    }
-    
     // FIXME: Check: has type changed?
     if( effectNum != *fxTypeParam )
     {
-        std::cout << "Changing effect num" << std::endl;
         effectNum = *fxTypeParam;
         surge_effect.reset(spawn_effect(effectNum, storage.get(),
                                         &(storage->getPatch().fx[0]),
@@ -218,12 +205,12 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
 //==============================================================================
 bool SurgefxAudioProcessor::hasEditor() const
 {
-    return false; // (change this to false if you choose to not supply an editor)
+    return true; // (change this to false if you choose to not supply an editor)
 }
 
 AudioProcessorEditor* SurgefxAudioProcessor::createEditor()
 {
-    return nullptr; // new SurgefxAudioProcessorEditor (*this);
+    return new SurgefxAudioProcessorEditor (*this);
 }
 
 //==============================================================================

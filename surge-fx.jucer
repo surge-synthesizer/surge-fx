@@ -3,7 +3,7 @@
 <JUCERPROJECT id="wrl6Y0" name="surge-fx" projectType="audioplug" jucerVersion="5.4.3"
               companyName="Surge Synth Team" companyCopyright="Copyright Various Authors, 2019"
               companyWebsite="https://surge-synthesizer.github.io/" pluginManufacturerCode="VmbA"
-              pluginCode="SGFX">
+              pluginCode="SGFX" pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="cR50fn" name="surge-fx">
     <GROUP id="{55EE2475-B339-9B2B-B553-4D5F86AA5924}" name="surge">
       <GROUP id="{AF603B09-893E-1A7F-FA6F-D1E37E4F550C}" name="libs">
@@ -224,7 +224,7 @@
   </MAINGROUP>
   <EXPORTFORMATS>
     <XCODE_MAC targetFolder="Builds/MacOSX" vst3Folder="deps/surge/vst3sdk"
-               extraCompilerFlags="-DMAC=1 -DTARGET_HEADLESS=1 -I../../deps/surge/src/common -I../../deps/surge/src/common/dsp -I../../deps/surge/src/common/dsp/effects&#10;-I../../deps/surge/libs/xml -I../../deps/surge/libs/filesystem&#10;-I../../deps/surge/src/headless -Wno-c++17-extensions -D_aligned_malloc(x,a)=malloc(x) -D_aligned_free(x)=free(x)">
+               extraCompilerFlags="-DJUCE_DISPLAY_SPLASH_SCREEN=0 -DJUCE_REPORT_APP_USAGE=0 -DMAC=1 -DTARGET_HEADLESS=1 -I../../deps/surge/src/common -I../../deps/surge/src/common/dsp -I../../deps/surge/src/common/dsp/effects&#10;-I../../deps/surge/libs/xml -I../../deps/surge/libs/filesystem&#10;-I../../deps/surge/src/headless -Wno-c++17-extensions -D_aligned_malloc(x,a)=malloc(x) -D_aligned_free(x)=free(x)">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="1" name="Debug"/>
         <CONFIGURATION isDebug="0" name="Release"/>

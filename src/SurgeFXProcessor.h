@@ -28,9 +28,7 @@ public:
     void prepareToPlay (double sampleRate, int samplesPerBlock) override;
     void releaseResources() override;
 
-   #ifndef JucePlugin_PreferredChannelConfigurations
     bool isBusesLayoutSupported (const BusesLayout& layouts) const override;
-   #endif
 
     void processBlock (AudioBuffer<float>&, MidiBuffer&) override;
 
@@ -56,6 +54,16 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;    
+
+
+    float getFXParamValue01(int i)
+    {
+        return *fxParams[i];
+    }
+    void setFXParamValue01(int i, float f)
+    {
+        *fxParams[i] = f;
+    }
     
 private:
     //==============================================================================
