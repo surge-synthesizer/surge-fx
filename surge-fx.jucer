@@ -6,6 +6,10 @@
               pluginCode="SGFX" pluginFormats="buildAU,buildStandalone,buildVST3">
   <MAINGROUP id="cR50fn" name="surge-fx">
     <GROUP id="{55EE2475-B339-9B2B-B553-4D5F86AA5924}" name="surge">
+      <GROUP id="{3465AAA3-E150-030D-1085-66D9F3951410}" name="resources">
+        <FILE id="yBz020" name="SurgeLogoOnlyBlue.svg" compile="0" resource="1"
+              file="resources/SurgeLogoOnlyBlue.svg"/>
+      </GROUP>
       <GROUP id="{AF603B09-893E-1A7F-FA6F-D1E37E4F550C}" name="libs">
         <GROUP id="{2A752819-DDB0-3927-929D-EBC295D0E9F0}" name="filesystem">
           <FILE id="KOZCaG" name="filesystem.cpp" compile="1" resource="0" file="deps/surge/libs/filesystem/filesystem.cpp"/>
@@ -220,6 +224,8 @@
       <FILE id="b3OMWY" name="SurgeFXEditor.cpp" compile="1" resource="0"
             file="src/SurgeFXEditor.cpp"/>
       <FILE id="aupIjz" name="SurgeFXEditor.h" compile="0" resource="0" file="src/SurgeFXEditor.h"/>
+      <FILE id="aupIjz" name="SurgeLookAndFeel.h" compile="0" resource="0"
+            file="src/SurgeLookAndFeel.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

@@ -19,26 +19,14 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
                        .withInput  ("Sidechain", AudioChannelSet::stereo(), true)
                        )
 {
-    effectNum = fxt_vocoder;
+    effectNum = fxt_delay;
     storage.reset( new SurgeStorage() );
 
     fxstorage = &(storage->getPatch().fx[0]);
-    fxstorage->type.val.i = effectNum;
-
-    surge_effect.reset(spawn_effect(effectNum, storage.get(),
-                                    &(storage->getPatch().fx[0]),
-                                    storage->getPatch().globaldata));
-    surge_effect->init();
-    surge_effect->init_ctrltypes();
-    surge_effect->init_default_values();
-
-    reorderSurgeParams();
-    
+    resetFxType(effectNum, false);
     fxstorage->return_level.id = -1;
     setupStorageRanges((Parameter *)fxstorage, &(fxstorage->p[n_fx_params-1]));
-    std::cout << "Storage Ranges are " << storage_id_start << " to " << storage_id_end << std::endl;
     
-    addParameter(fxTypeParam = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, effectNum ));
     for( int i=0; i<n_fx_params; ++i )
     {
         char lb[256], nm[256];
@@ -47,6 +35,16 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
         
         addParameter(fxParams[i] = new AudioParameterFloat(lb, nm, 0.f, 1.f, fxstorage->p[fx_param_remap[i]].get_value_f01() ) );
     }
+    addParameter(fxParams[n_fx_params] = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, effectNum ));
+
+    for( int i=0; i< n_fx_params + 1; ++i )
+    {
+        fxParams[i]->addListener(this);
+        changedParams[i] = false;
+        isUserEditing[i] = false;
+    }
+
+    paramChangeListener = [](){};
 }
 
 SurgefxAudioProcessor::~SurgefxAudioProcessor()
@@ -142,22 +140,11 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     auto sideChainInput = getBusBuffer(buffer, true, 1);
 
     // FIXME: Check: has type changed?
-    if( effectNum != *fxTypeParam )
+    int pt = *(static_cast<AudioParameterInt*>(fxParams[n_fx_params]));
+    if( effectNum != pt )
     {
-        effectNum = *fxTypeParam;
-        surge_effect.reset(spawn_effect(effectNum, storage.get(),
-                                        &(storage->getPatch().fx[0]),
-                                        storage->getPatch().globaldata));
-        surge_effect->init();
-        surge_effect->init_ctrltypes();
-        surge_effect->init_default_values();
-
-        reorderSurgeParams();
-    
-        for( int i=0; i<n_fx_params; ++i )
-        {
-            *fxParams[i] = fxstorage->p[fx_param_remap[i]].get_value_f01();
-        }
+        effectNum = pt;
+        resetFxType(effectNum);
     }
     
     for(int outPos = 0; outPos < buffer.getNumSamples(); outPos += BLOCK_SIZE )
@@ -176,7 +163,7 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         for( int i=0; i<n_fx_params; ++i )
         {
-            fxstorage->p[fx_param_remap[i]].set_value_f01(*(fxParams[i]));
+            fxstorage->p[fx_param_remap[i]].set_value_f01(*(static_cast<AudioParameterFloat*>(fxParams[i])));
         }
         copyGlobaldataSubset(storage_id_start, storage_id_end);
 
@@ -230,11 +217,11 @@ void SurgefxAudioProcessor::setStateInformation (const void* data, int sizeInByt
 void SurgefxAudioProcessor::reorderSurgeParams() {
     if (surge_effect.get()) {
         for(auto i=0; i<n_fx_params; ++i )
-            fx_param_remap[i] = 0;
+            fx_param_remap[i] = i;
         
         std::vector<std::pair<int, int>> orderTrack;
         for (auto i = 0; i < n_fx_params; ++i) {
-            if (fxstorage->p[i].posy_offset) {
+            if (fxstorage->p[i].posy_offset && fxstorage->p[i].ctrltype != ct_none) {
                 orderTrack.push_back(std::pair<int, int>(
                                          i, i * 2 + fxstorage->p[i].posy_offset));
             } else {
@@ -267,11 +254,37 @@ void SurgefxAudioProcessor::reorderSurgeParams() {
         }
     }
 
+    for( auto i=0; i<n_fx_params; ++i)
+        if( fxstorage->p[fx_param_remap[i]].ctrltype == ct_none )
+            group_names[i] = "-";
+}
+
+void SurgefxAudioProcessor::resetFxType(int type, bool updateJuceParams)
+{
+    effectNum = type;
+    fxstorage->type.val.i = effectNum;
+
     for( int i=0; i<n_fx_params; ++i )
+        fxstorage->p[i].set_type(ct_none);
+    
+    surge_effect.reset(spawn_effect(effectNum, storage.get(),
+                                    &(storage->getPatch().fx[0]),
+                                    storage->getPatch().globaldata));
+    surge_effect->init();
+    surge_effect->init_ctrltypes();
+    surge_effect->init_default_values();
+
+    reorderSurgeParams();
+
+    if( updateJuceParams )
     {
-        std::cout << i << " " << fx_param_remap[i] << " " << group_names[i] << " "
-                  << fxstorage->p[fx_param_remap[i]].get_name() << std::endl;
+        for( int i=0; i<n_fx_params; ++i )
+        {
+            *(static_cast<AudioParameterFloat *>(fxParams[i])) = fxstorage->p[fx_param_remap[i]].get_value_f01();
+        }
+        *(static_cast<AudioParameterInt *>(fxParams[n_fx_params])) = effectNum;
     }
+
 }
 
 void SurgefxAudioProcessor::copyGlobaldataSubset(int start, int end) {
