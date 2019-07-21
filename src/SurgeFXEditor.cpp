@@ -27,7 +27,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     for( int i=0; i<n_fx_params; ++i )
     {
         fxParamSliders[i].setRange(0.0, 1.0, 0.005 );
-        fxParamSliders[i].setValue(processor.getFXParamValue01(i));
+        fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
         fxParamSliders[i].setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
         fxParamSliders[i].setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0 );
         Rectangle<int> position { ( i / 6 ) * getWidth()/2 + 10, ( i % 6 ) * 60 + 100, 55, 55 };
@@ -113,8 +113,19 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
         {
             if( i < n_fx_params )
             {
-                fxParamSliders[i].setValue(fv[i]);
+                fxParamSliders[i].setValue(fv[i], NotificationType::dontSendNotification);
                 fxValueLabel[i].setText(processor.getParamValue(i), NotificationType::dontSendNotification);
+            }
+            else
+            {
+                // My type has changed
+                for( int i=0; i<n_fx_params; ++i )
+                {
+                    fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
+                    fxGroupLabel[i].setText(processor.getParamGroup(i).c_str(), NotificationType::dontSendNotification);
+                    fxNameLabel[i].setText(processor.getParamName(i).c_str(), NotificationType::dontSendNotification);
+                    fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
+                }
             }
         }
 }
@@ -141,7 +152,6 @@ void SurgefxAudioProcessorEditor::paint (Graphics& g)
 
 void SurgefxAudioProcessorEditor::resized()
 {
-    std::cout << "Resized" << std::endl;
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 }

@@ -15,6 +15,10 @@
 #include <functional>
 #include "dsp/effect/Effect.h"
 
+#if MAC
+#include <execinfo.h>
+#endif
+
 //==============================================================================
 /**
 */
@@ -59,6 +63,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;    
 
 
+    float getFXStorageValue01(int i)
+    {
+        return fxstorage->p[fx_param_remap[i]].get_value_f01();
+    }
     float getFXParamValue01(int i)
     {
         return *(static_cast<AudioParameterFloat*>(fxParams[i]));
@@ -73,6 +81,8 @@ public:
     }
 
     virtual void parameterValueChanged(int parameterIndex, float newValue ) override {
+        if( supressParameterUpdates ) return;
+        
         if( ! isUserEditing[parameterIndex] )
         {
             // this order does matter
@@ -135,7 +145,9 @@ public:
 
     std::string getParamValue(int i) {
         if( fxstorage->p[fx_param_remap[i]].ctrltype == ct_none )
+        {
             return "-";
+        }
         
         char txt[1024];
         fxstorage->p[fx_param_remap[i]].get_display(txt, false, 0);
@@ -144,7 +156,9 @@ public:
 
     std::string getParamValueFromFloat(int i, float f) {
         if( fxstorage->p[fx_param_remap[i]].ctrltype == ct_none )
+        {
             return "-";
+        }
         
         char txt[1024];
         fxstorage->p[fx_param_remap[i]].set_value_f01(f);
@@ -152,6 +166,8 @@ public:
         return txt;
     }
 
+    void updateJuceParamsFromStorage();
+    
     void resetFxType(int t, bool updateJuceParams = true);
     
 private:
@@ -161,6 +177,15 @@ private:
     std::atomic<float>   changedParamsValue[n_fx_params+1];
     std::atomic<bool>    isUserEditing[n_fx_params+1];
     std::function<void()>  paramChangeListener;
+    bool supressParameterUpdates = false;
+    struct SupressGuard {
+        bool *s;
+        SupressGuard( bool *sg ) {
+            s = sg;
+            *s = true;
+        }
+        ~SupressGuard() { *s = false; }
+    };
     
     // Members for the FX. If this looks a lot like surge-rack/SurgeFX.hpp that's not a coincidence
     std::unique_ptr<SurgeStorage> storage;

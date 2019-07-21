@@ -211,15 +211,40 @@ AudioProcessorEditor* SurgefxAudioProcessor::createEditor()
 //==============================================================================
 void SurgefxAudioProcessor::getStateInformation (MemoryBlock& destData)
 {
-    // You should use this method to store your parameters in the memory block.
-    // You could do that either as raw data, or use the XML or ValueTree classes
-    // as intermediaries to make it easy to save and load complex data.
+    std::unique_ptr<XmlElement> xml (new XmlElement ("surgefx"));
+    xml->setAttribute( "streamingVersion", (int)1 );
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        char nm[256];
+        snprintf(nm, 256, "fxp_%d", i );
+        float val = *(static_cast<AudioParameterFloat *>(fxParams[i]));
+        xml->setAttribute(nm, val);
+    }
+    xml->setAttribute( "fxt", effectNum );
+
+    copyXmlToBinary (*xml, destData);
 }
 
 void SurgefxAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 {
-    // You should use this method to restore your parameters from this memory block,
-    // whose contents will have been created by the getStateInformation() call.
+    std::unique_ptr<XmlElement> xmlState (getXmlFromBinary (data, sizeInBytes));
+    if (xmlState.get() != nullptr)
+    {
+        if (xmlState->hasTagName ("surgefx"))
+        {
+            effectNum = xmlState->getIntAttribute("fxt", fxt_delay);
+            resetFxType(effectNum, false);
+
+            for( int i=0; i<n_fx_params; ++i )
+            {
+                char nm[256];
+                snprintf(nm, 256, "fxp_%d", i );
+                float v = xmlState->getDoubleAttribute(nm, 0.0);
+                fxstorage->p[fx_param_remap[i]].set_value_f01(v);
+            }
+            updateJuceParamsFromStorage();
+        }
+    }
 }
 
 void SurgefxAudioProcessor::reorderSurgeParams() {
@@ -286,13 +311,30 @@ void SurgefxAudioProcessor::resetFxType(int type, bool updateJuceParams)
 
     if( updateJuceParams )
     {
-        for( int i=0; i<n_fx_params; ++i )
-        {
-            *(static_cast<AudioParameterFloat *>(fxParams[i])) = fxstorage->p[fx_param_remap[i]].get_value_f01();
-        }
-        *(static_cast<AudioParameterInt *>(fxParams[n_fx_params])) = effectNum;
+        updateJuceParamsFromStorage();
     }
 
+    
+}
+
+void SurgefxAudioProcessor::updateJuceParamsFromStorage()
+{
+    SupressGuard sg(&supressParameterUpdates);
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        *(static_cast<AudioParameterFloat *>(fxParams[i])) = fxstorage->p[fx_param_remap[i]].get_value_f01();
+    }
+    *(static_cast<AudioParameterInt *>(fxParams[n_fx_params])) = effectNum;
+    
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        changedParamsValue[i] = fxstorage->p[fx_param_remap[i]].get_value_f01();
+        changedParams[i] = true;
+    }
+    changedParamsValue[n_fx_params] = effectNum;
+    changedParams[n_fx_params] = true;
+    
+    triggerAsyncUpdate();
 }
 
 void SurgefxAudioProcessor::copyGlobaldataSubset(int start, int end) {
