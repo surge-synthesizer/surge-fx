@@ -28,6 +28,42 @@ jobs:
     displayName: Get Surge SubModule
 
   - bash: |
-      make all
+      make dmg
+      mkdir products/
+      mv *dmg products
     displayName: Build Mac Plugins
     condition: variables.isMac
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'MACOS_BUILD'
+      targetPath: 'products/'
+    displayName: Publish Zip
+
+
+- job: UpdateGithubRelease
+  dependsOn: Build
+  condition: and(succeeded(), eq(variables['Build.SourceBranch'], 'refs/heads/master'))
+
+  steps:
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'MACOS_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - bash: |
+     scripts/release-notes.sh > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+    displayName: Fake up release notes
+
+  - task: GitHubRelease@0
+    displayName: "Update Github Release"
+    inputs:
+      gitHubConnection: surge-rackupdater
+      repositoryName: surge-synthesizer/surge-fx
+      action: edit
+      tag: Nightly
+      target: '$(Build.SourceVersion)'
+      addChangeLog: false
+      releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+      assets: $(Build.ArtifactStagingDirectory)/*.dmg
+
