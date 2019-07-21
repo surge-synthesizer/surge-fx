@@ -11,6 +11,11 @@
 #include "SurgeFXProcessor.h"
 #include "SurgeFXEditor.h"
 
+#if LINUX
+extern unsigned char configurationXmlStart[];
+
+#endif
+
 //==============================================================================
 SurgefxAudioProcessor::SurgefxAudioProcessor()
      : AudioProcessor (BusesProperties()
@@ -19,6 +24,9 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
                        .withInput  ("Sidechain", AudioChannelSet::stereo(), true)
                        )
 {
+#if LINUX
+    strncpy((char *)&configurationXmlStart, BinaryData::configuration_xml, BinaryData::configuration_xmlSize);
+#endif
     effectNum = fxt_delay;
     storage.reset( new SurgeStorage() );
 

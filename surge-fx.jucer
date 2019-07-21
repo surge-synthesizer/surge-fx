@@ -7,6 +7,8 @@
   <MAINGROUP id="cR50fn" name="surge-fx">
     <GROUP id="{55EE2475-B339-9B2B-B553-4D5F86AA5924}" name="surge">
       <GROUP id="{3465AAA3-E150-030D-1085-66D9F3951410}" name="resources">
+        <FILE id="avE3lY" name="configuration.xml" compile="0" resource="1"
+              file="deps/surge/resources/data/configuration.xml"/>
         <FILE id="yBz020" name="SurgeLogoOnlyBlue.svg" compile="0" resource="1"
               file="resources/SurgeLogoOnlyBlue.svg"/>
       </GROUP>
@@ -217,6 +219,8 @@
       </GROUP>
     </GROUP>
     <GROUP id="{817258CB-25E0-B1C8-CB37-3CBF4C3A5385}" name="src">
+      <FILE id="VeWJJ0" name="OSSpecificHacks.cpp" compile="1" resource="0"
+            file="src/OSSpecificHacks.cpp"/>
       <FILE id="y9FKUl" name="SurgeFXProcessor.cpp" compile="1" resource="0"
             file="src/SurgeFXProcessor.cpp"/>
       <FILE id="qg4XEX" name="SurgeFXProcessor.h" compile="0" resource="0"
@@ -274,10 +278,11 @@
         <MODULEPATH id="juce_opengl" path="./assets/JUCE/modules"/>
       </MODULEPATHS>
     </VS2017>
-    <LINUX_MAKE targetFolder="Builds/LinuxMakefile">
+    <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vst3Folder="deps/surge/vst3sdk"
+                extraLinkerFlags="-lstdc++fs -pthread" extraCompilerFlags="-DJUCE_DISPLAY_SPLASH_SCREEN=0 -DJUCE_REPORT_APP_USAGE=0 -DLINUX=1 -DTARGET_HEADLESS=1 -I../../deps/surge/src/linux -I../../deps/surge/src/common -I../../deps/surge/src/common/dsp -I../../deps/surge/src/common/dsp/effects -I../../deps/surge/libs/xml -I../../deps/surge/libs/filesystem&#10;-I../../deps/surge/src/headless -I../../src -include LinuxAligned.h -Wno-c++17-extensions">
       <CONFIGURATIONS>
-        <CONFIGURATION isDebug="1" name="Debug"/>
-        <CONFIGURATION isDebug="0" name="Release"/>
+        <CONFIGURATION isDebug="0" name="Debug"/>
+        <CONFIGURATION isDebug="1" name="Release"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
         <MODULEPATH id="juce_audio_basics" path="./assets/JUCE/modules"/>
@@ -316,6 +321,7 @@
   </MODULES>
   <LIVE_SETTINGS>
     <OSX/>
+    <LINUX/>
   </LIVE_SETTINGS>
   <JUCEOPTIONS JUCE_VST3_CAN_REPLACE_VST2="0" JUCE_STRICT_REFCOUNTEDPOINTER="1"
                JUCE_PLUGINHOST_VST3="1" JUCE_PLUGINHOST_AU="1" JUCE_PLUGINHOST_VST="0"/>
