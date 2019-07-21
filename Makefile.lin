@@ -16,7 +16,12 @@ assets/juce-5.4.3-linux.zip:
 assets/JUCE: assets assets/juce-5.4.3-linux.zip
 
 Builds/LinuxMakefile/Makefile:	assets/JUCE surge-fx.jucer
+	./scripts/vst_jucer.sh > /tmp/surge-fx.jucer
+	cp surge-fx.jucer surge-fx.jucer~
+	cp /tmp/surge-fx.jucer .
 	assets/JUCE/Projucer --resave surge-fx.jucer
+	rm surge-fx.jucer
+	mv surge-fx.jucer~ surge-fx.jucer
 	touch $@
 
 build:	Builds/LinuxMakefile/Makefile

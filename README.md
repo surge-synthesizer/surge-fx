@@ -35,6 +35,17 @@ git submodule update --init --recursive
 make -f Makefile.lin build
 ```
 
+On linux, and only on linux, if you are a licensee to the Steinberg VST2
+distribution and want to build a VST2, you can do the following
+
+```
+make -f Makefile.lin super-clean
+export VST2SDK_DIR=(location of the VST2 SDK source)
+make -f Makefile.lin build
+```
+
+and our Makefile will reconfigure jucer to eject a VST2
+
 ## Windows
 
 Coming soon.

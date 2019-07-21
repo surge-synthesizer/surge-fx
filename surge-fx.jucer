@@ -279,7 +279,8 @@
       </MODULEPATHS>
     </VS2017>
     <LINUX_MAKE targetFolder="Builds/LinuxMakefile" vst3Folder="deps/surge/vst3sdk"
-                extraLinkerFlags="-lstdc++fs -pthread" extraCompilerFlags="-DJUCE_DISPLAY_SPLASH_SCREEN=0 -DJUCE_REPORT_APP_USAGE=0 -DLINUX=1 -DTARGET_HEADLESS=1 -I../../deps/surge/src/linux -I../../deps/surge/src/common -I../../deps/surge/src/common/dsp -I../../deps/surge/src/common/dsp/effects -I../../deps/surge/libs/xml -I../../deps/surge/libs/filesystem&#10;-I../../deps/surge/src/headless -I../../src -include LinuxAligned.h -Wno-c++17-extensions">
+                extraLinkerFlags="-lstdc++fs -pthread" extraCompilerFlags="-fPIC -DJUCE_DISPLAY_SPLASH_SCREEN=0 -DJUCE_REPORT_APP_USAGE=0 -DLINUX=1 -DTARGET_HEADLESS=1 -I../../deps/surge/src/linux -I../../deps/surge/src/common -I../../deps/surge/src/common/dsp -I../../deps/surge/src/common/dsp/effects -I../../deps/surge/libs/xml -I../../deps/surge/libs/filesystem&#10;-I../../deps/surge/src/headless -I../../src -include LinuxAligned.h"
+                vstLegacyFolder="VST2SDK_DIR">
       <CONFIGURATIONS>
         <CONFIGURATION isDebug="0" name="Debug"/>
         <CONFIGURATION isDebug="1" name="Release"/>
