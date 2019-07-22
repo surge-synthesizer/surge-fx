@@ -42,12 +42,14 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
         snprintf(nm, 256, "FX Parameter %d", i );
         
         addParameter(fxParams[i] = new AudioParameterFloat(lb, nm, 0.f, 1.f, fxstorage->p[fx_param_remap[i]].get_value_f01() ) );
+        fxBaseParams[i] = fxParams[i];
     }
-    addParameter(fxParams[n_fx_params] = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, effectNum ));
+    addParameter(fxType = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, effectNum ));
+    fxBaseParams[n_fx_params] = fxType;
 
     for( int i=0; i< n_fx_params + 1; ++i )
     {
-        fxParams[i]->addListener(this);
+        fxBaseParams[i]->addListener(this);
         changedParams[i] = false;
         isUserEditing[i] = false;
     }
@@ -148,7 +150,7 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
     auto sideChainInput = getBusBuffer(buffer, true, 1);
 
     // FIXME: Check: has type changed?
-    int pt = *(static_cast<AudioParameterInt*>(fxParams[n_fx_params]));
+    int pt = *fxType;
     if( effectNum != pt )
     {
         effectNum = pt;
@@ -171,7 +173,7 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         
         for( int i=0; i<n_fx_params; ++i )
         {
-            fxstorage->p[fx_param_remap[i]].set_value_f01(*(static_cast<AudioParameterFloat*>(fxParams[i])));
+            fxstorage->p[fx_param_remap[i]].set_value_f01(*fxParams[i]);
         }
         copyGlobaldataSubset(storage_id_start, storage_id_end);
 
@@ -217,7 +219,7 @@ void SurgefxAudioProcessor::getStateInformation (MemoryBlock& destData)
     {
         char nm[256];
         snprintf(nm, 256, "fxp_%d", i );
-        float val = *(static_cast<AudioParameterFloat *>(fxParams[i]));
+        float val = *(fxParams[i]);
         xml->setAttribute(nm, val);
     }
     xml->setAttribute( "fxt", effectNum );
@@ -322,9 +324,9 @@ void SurgefxAudioProcessor::updateJuceParamsFromStorage()
     SupressGuard sg(&supressParameterUpdates);
     for( int i=0; i<n_fx_params; ++i )
     {
-        *(static_cast<AudioParameterFloat *>(fxParams[i])) = fxstorage->p[fx_param_remap[i]].get_value_f01();
+        *(fxParams[i]) = fxstorage->p[fx_param_remap[i]].get_value_f01();
     }
-    *(static_cast<AudioParameterInt *>(fxParams[n_fx_params])) = effectNum;
+    *(fxType) = effectNum;
     
     for( int i=0; i<n_fx_params; ++i )
     {

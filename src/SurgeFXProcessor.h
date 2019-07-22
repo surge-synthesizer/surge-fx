@@ -69,11 +69,11 @@ public:
     }
     float getFXParamValue01(int i)
     {
-        return *(static_cast<AudioParameterFloat*>(fxParams[i]));
+        return *(fxParams[i]);
     }
     void setFXParamValue01(int i, float f)
     {
-        *(static_cast<AudioParameterFloat*>(fxParams[i])) = f;
+        *(fxParams[i]) = f;
     }
     bool isDirtyParam(int i)
     {
@@ -120,11 +120,11 @@ public:
         isUserEditing[i] = isEd;
         if(isEd)
         {
-            fxParams[i]->beginChangeGesture();
+            fxBaseParams[i]->beginChangeGesture();
         }
         else
         {
-            fxParams[i]->endChangeGesture();
+            fxBaseParams[i]->endChangeGesture();
         }
     }
 
@@ -172,7 +172,12 @@ public:
     
 private:
     //==============================================================================
-    AudioProcessorParameter *fxParams[n_fx_params + 1];
+    AudioProcessorParameter *fxBaseParams[n_fx_params + 1];
+
+    // These are just copyes of the pointer from above with the cast done to make the code look nicer
+    AudioParameterFloat *fxParams[n_fx_params];
+    AudioParameterInt *fxType;
+    
     std::atomic<bool>    changedParams[n_fx_params+1];
     std::atomic<float>   changedParamsValue[n_fx_params+1];
     std::atomic<bool>    isUserEditing[n_fx_params+1];
