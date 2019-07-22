@@ -44,10 +44,30 @@ jobs:
     displayName: Publish Mac DMG
     condition: variables.isMac
 
-  - task: BatchScript@1
+  - bash: |
+      mkdir assets
+      mkdir products
+      curl -o assets/juce-5.4.3-windows.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.3-windows.zip   
+      cd assets
+      unzip juce-5.4.3-windows.zip
+      cd ..
+      assets\JUCE\Projucer.exe --resave surge-fx.sln   
+    displayName: Build Windows sln file
+    condition: variables.isWindows
+
+  - task: MSBuild@1
     inputs:
-      filename: Make-win.bat
-    displayName: Build Windows with a Bat File
+      solution: 'Builds\VisualStudio2017\surge-fx.sln'
+      maximumCpuCount: true
+      platform: 'x64'
+      configuration: 'Release'
+    condition: variables.isWindows
+    displayName: Build Windows x64
+
+  - bash: |
+      cd Builds/VisualStudio2017/x64
+      7z.exe a ..\..\..\products\surge-fx-win.zip Release
+    displayName: Build Windows sln file
     condition: variables.isWindows
 
   - task: PublishPipelineArtifact@0
