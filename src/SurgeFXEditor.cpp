@@ -28,7 +28,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
         fxParamSliders[i].setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
         fxParamSliders[i].setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0 );
-        Rectangle<int> position { ( i / 6 ) * getWidth()/2 + 10, ( i % 6 ) * 60 + 100, 55, 55 };
+        juce::Rectangle<int> position { ( i / 6 ) * getWidth()/2 + 10, ( i % 6 ) * 60 + 100, 55, 55 };
         fxParamSliders[i].setBounds(position);
         fxParamSliders[i].setChangeNotificationOnlyOnRelease(false);
         fxParamSliders[i].onValueChange = [i, this]() {
@@ -44,9 +44,9 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         };
         addAndMakeVisible(&(fxParamSliders[i]));
 
-        Rectangle<int> groupPos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100, getWidth()/2 - 75, 12 };
-        Rectangle<int> namePos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100 + 12 , getWidth()/2 - 75, 18 };
-        Rectangle<int> valuePos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100 + 30, getWidth()/2 - 75, 25 };
+        juce::Rectangle<int> groupPos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100, getWidth()/2 - 75, 12 };
+        juce::Rectangle<int> namePos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100 + 12 , getWidth()/2 - 75, 18 };
+        juce::Rectangle<int> valuePos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100 + 30, getWidth()/2 - 75, 25 };
 
         fxGroupLabel[i].setText(processor.getParamGroup(i).c_str(), NotificationType::dontSendNotification);
         fxGroupLabel[i].setFont(Font(10));
@@ -75,7 +75,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         int bxmg = 10;
         int bysz = 40;
         int bymg = 10;
-        Rectangle<int> bpos { ( i % 5 ) * bxsz + bxmg, (i/5) * bysz + bymg, bxsz, bysz };
+        juce::Rectangle<int> bpos { ( i % 5 ) * bxsz + bxmg, (i/5) * bysz + bymg, bxsz, bysz };
         //selectType[i].setRadioGroupId(FxTypeGroup);
         //selectType[i].setClickingTogglesState(true);
         selectType[i].setBounds(bpos);

@@ -13,6 +13,9 @@ jobs:
       mac10:
         imageName: 'macos-10.13'
         isMac: true
+      win:
+        imageName: 'vs2017-win2016'
+        isWindows: true
 
   pool:
     vmImage: $(imageName)
@@ -28,7 +31,7 @@ jobs:
     displayName: Get Surge SubModule
 
   - bash: |
-      make dmg
+      make -f Makefile.mac dmg
       mkdir products/
       mv *dmg products
     displayName: Build Mac Plugins
@@ -38,7 +41,41 @@ jobs:
     inputs:
       artifactName: 'MACOS_BUILD'
       targetPath: 'products/'
-    displayName: Publish Zip
+    displayName: Publish Mac DMG
+    condition: variables.isMac
+
+  - bash: |
+      mkdir assets
+      mkdir products
+      curl -o assets/juce-5.4.3-windows.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.3-windows.zip   
+      cd assets
+      unzip juce-5.4.3-windows.zip
+      cd ..
+      assets/JUCE/Projucer.exe --resave surge-fx.jucer   
+    displayName: Build Windows sln file
+    condition: variables.isWindows
+
+  - task: MSBuild@1
+    inputs:
+      solution: 'Builds\VisualStudio2017\surge-fx.sln'
+      maximumCpuCount: true
+      platform: 'x64'
+      configuration: 'Release'
+    condition: variables.isWindows
+    displayName: Build Windows x64
+
+  - bash: |
+      cd Builds/VisualStudio2017/x64
+      7z.exe a ..\..\..\products\surge-fx-win.zip Release
+    displayName: Build Windows sln file
+    condition: variables.isWindows
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS_BUILD'
+      targetPath: 'products/'
+    displayName: Publish Windows Zip
+    condition: variables.isWindows
 
 
 - job: UpdateGithubRelease
@@ -49,6 +86,11 @@ jobs:
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: 'MACOS_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS_BUILD'
       targetPath: $(Build.ArtifactStagingDirectory)
 
   - bash: |
