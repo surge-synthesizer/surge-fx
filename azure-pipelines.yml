@@ -31,7 +31,7 @@ jobs:
     displayName: Get Surge SubModule
 
   - bash: |
-      make dmg
+      make -f Makefile.mac dmg
       mkdir products/
       mv *dmg products
     displayName: Build Mac Plugins
@@ -44,9 +44,10 @@ jobs:
     displayName: Publish Mac DMG
     condition: variables.isMac
 
-  - bash: |
-      Make-win.bat
-    displayName: Build Windows Plugins
+  - task: BatchScript@1
+    inputs:
+      filename: Make-win.bat
+    displayName: Build Windows with a Bat File
     condition: variables.isWindows
 
   - task: PublishPipelineArtifact@0
