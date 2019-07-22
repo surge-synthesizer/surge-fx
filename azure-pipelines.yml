@@ -51,7 +51,7 @@ jobs:
       cd assets
       unzip juce-5.4.3-windows.zip
       cd ..
-      assets/JUCE/Projucer.exe --resave surge-fx.sln   
+      assets/JUCE/Projucer.exe --resave surge-fx.jucer   
     displayName: Build Windows sln file
     condition: variables.isWindows
 
