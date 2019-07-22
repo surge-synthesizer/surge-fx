@@ -13,6 +13,9 @@ jobs:
       mac10:
         imageName: 'macos-10.13'
         isMac: true
+      win:
+        imageName: 'vs2017-win2016'
+        isWindows: true
 
   pool:
     vmImage: $(imageName)
@@ -38,7 +41,20 @@ jobs:
     inputs:
       artifactName: 'MACOS_BUILD'
       targetPath: 'products/'
-    displayName: Publish Zip
+    displayName: Publish Mac DMG
+    condition: variables.isMac
+
+  - bash: |
+      Make-win.bat
+    displayName: Build Windows Plugins
+    condition: variables.isWindows
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS_BUILD'
+      targetPath: 'products/'
+    displayName: Publish Windows Zip
+    condition: variables.isWindows
 
 
 - job: UpdateGithubRelease
@@ -49,6 +65,11 @@ jobs:
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: 'MACOS_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS_BUILD'
       targetPath: $(Build.ArtifactStagingDirectory)
 
   - bash: |

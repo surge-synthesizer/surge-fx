@@ -52,7 +52,7 @@ public:
         }
         
 
-        auto bounds = Rectangle<int> (x, y, width, height).toFloat().reduced (10);
+        auto bounds = juce::Rectangle<int> (x, y, width, height).toFloat().reduced (10);
         g.setColour(fill);
         g.fillEllipse(bounds);
         g.setColour(edge);
@@ -68,11 +68,11 @@ public:
                                  bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
         
         g.setColour (tick);
-        g.fillEllipse (Rectangle<float> (thumbWidth, thumbWidth).withCentre (thumbPoint));
+        g.fillEllipse (juce::Rectangle<float> (thumbWidth, thumbWidth).withCentre (thumbPoint));
         g.setColour(edge);
-        g.drawEllipse (Rectangle<float> (thumbWidth, thumbWidth).withCentre (thumbPoint), 1.0);
+        g.drawEllipse (juce::Rectangle<float> (thumbWidth, thumbWidth).withCentre (thumbPoint), 1.0);
         g.setColour(tick);
-        g.fillEllipse (Rectangle<float> (thumbWidth, thumbWidth).withCentre( bounds.getCentre() ) );
+        g.fillEllipse (juce::Rectangle<float> (thumbWidth, thumbWidth).withCentre( bounds.getCentre() ) );
 
         auto l = Line<float>(thumbPoint, bounds.getCentre());
         g.drawLine(l, thumbWidth );
@@ -86,8 +86,8 @@ public:
         g.setColour(findColour(SurgeColourIds::orange));
         g.fillRect(0,h-orangeHeight,w,orangeHeight);
         
-        Rectangle<float> logoBound { w/2.f-30, h-orangeHeight + 2.f, 60, orangeHeight - 4.f };
-        surgeLogo->drawWithin(g, logoBound, RectanglePlacement::xMid | RectanglePlacement::yMid, 1.0 );
+        juce::Rectangle<float> logoBound { w/2.f-30, h-orangeHeight + 2.f, 60, orangeHeight - 4.f };
+        surgeLogo->drawWithin(g, logoBound, juce::RectanglePlacement::xMid | juce::RectanglePlacement::yMid, 1.0 );
         
         g.setColour(findColour(SurgeColourIds::blue));
         g.drawLine(0,h-orangeHeight,w,h-orangeHeight);
