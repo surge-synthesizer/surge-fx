@@ -22,8 +22,6 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     setSize (600, 55 * 6 + 150);
     setResizable(false, false); // For now
 
-    surgeLogo = Drawable::createFromImageData (BinaryData::SurgeLogoOnlyBlue_svg, BinaryData::SurgeLogoOnlyBlue_svgSize);
-
     for( int i=0; i<n_fx_params; ++i )
     {
         fxParamSliders[i].setRange(0.0, 1.0, 0.005 );
@@ -133,21 +131,7 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
 //==============================================================================
 void SurgefxAudioProcessorEditor::paint (Graphics& g)
 {
-    // (Our component is opaque, so we must completely fill the background with a solid colour)
-    Colour surgeGrayBg(205,206,212);
-    Colour surgeOrange(255,144,0);
-    Colour surgeBlue(18, 52, 99);
-    
-    g.fillAll(Colour(205,206,212));
-
-    g.setColour(surgeOrange);
-    int orangeHeight = 20;
-    g.fillRect(0,getHeight()-orangeHeight,getWidth(),orangeHeight);
-    Rectangle<float> logoBound { getWidth()/2.f-30, getHeight()-orangeHeight + 2.f, 60, orangeHeight - 4.f };
-    surgeLogo->drawWithin(g, logoBound, RectanglePlacement::xMid | RectanglePlacement::yMid, 1.0 );
-    g.setColour(surgeBlue);
-    g.drawLine(0,getHeight()-orangeHeight,getWidth(),getHeight()-orangeHeight);
-
+    surgeLookFeel->paintComponentBackground(g, getWidth(), getHeight() );
 }
 
 void SurgefxAudioProcessorEditor::resized()

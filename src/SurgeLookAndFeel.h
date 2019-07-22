@@ -2,17 +2,95 @@
 
 class SurgeLookAndFeel : public LookAndFeel_V4
 {
+private:
+    ScopedPointer<Drawable> surgeLogo;
+
 public:
 
-    Colour surgeGrayBg;
-    Colour surgeOrange;
-    Colour surgeBlue;
+    enum SurgeColourIds
+    {
+        grayBg = 0x2700001,
+        orange,
+        orangeMedium,
+        orangeDark, 
+        blue,
+        knobHandle,
+    };
 
     SurgeLookAndFeel() {
-        surgeGrayBg = Colour(205,206,212);
-        surgeOrange = Colour(255,144,0);
-        surgeBlue = Colour(18,52,99);
-
+        Colour surgeGrayBg = Colour(205,206,212);
+        Colour surgeOrange = Colour(255,144,0);
+        Colour surgeBlue = Colour(18,52,99);
+        
+        setColour(SurgeColourIds::grayBg, surgeGrayBg);
+        setColour(SurgeColourIds::orange, surgeOrange);
+        setColour(SurgeColourIds::orangeDark, Colour(101, 50, 3));
+        setColour(SurgeColourIds::orangeMedium, Colour(227, 112, 8));
+        setColour(SurgeColourIds::blue, surgeBlue);
+        setColour(SurgeColourIds::knobHandle, Colour(255,255,255));
+        
         setColour(Label::ColourIds::textColourId, surgeBlue);
+
+        surgeLogo = Drawable::createFromImageData (BinaryData::SurgeLogoOnlyBlue_svg, BinaryData::SurgeLogoOnlyBlue_svgSize);
     }
+
+
+    virtual void drawRotarySlider(Graphics &g,
+                                  int x, int y, int width, int height,
+                                  float sliderPos,
+                                  float rotaryStartAngle, float rotaryEndAngle,
+                                  Slider &slider) override
+    {
+        auto fill = findColour(SurgeColourIds::orange);
+        auto edge = findColour(SurgeColourIds::blue);
+        auto tick = findColour(SurgeColourIds::knobHandle);
+
+        if( ! slider.isEnabled() )
+        {
+            fill = findColour(SurgeColourIds::orangeMedium);
+            tick = edge;
+        }
+        
+
+        auto bounds = Rectangle<int> (x, y, width, height).toFloat().reduced (10);
+        g.setColour(fill);
+        g.fillEllipse(bounds);
+        g.setColour(edge);
+        g.drawEllipse(bounds, 1.0);
+
+        
+        auto radius = jmin (bounds.getWidth(), bounds.getHeight()) / 2.0f;
+        auto arcRadius = radius;
+        auto toAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
+        auto thumbWidth = 5;
+
+        Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
+                                 bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
+        
+        g.setColour (tick);
+        g.fillEllipse (Rectangle<float> (thumbWidth, thumbWidth).withCentre (thumbPoint));
+        g.setColour(edge);
+        g.drawEllipse (Rectangle<float> (thumbWidth, thumbWidth).withCentre (thumbPoint), 1.0);
+        g.setColour(tick);
+        g.fillEllipse (Rectangle<float> (thumbWidth, thumbWidth).withCentre( bounds.getCentre() ) );
+
+        auto l = Line<float>(thumbPoint, bounds.getCentre());
+        g.drawLine(l, thumbWidth );
+    }
+    
+    void paintComponentBackground(Graphics &g, int w, int h)
+    {
+        g.fillAll(findColour(SurgeColourIds::grayBg));
+
+        int orangeHeight = 20;
+        g.setColour(findColour(SurgeColourIds::orange));
+        g.fillRect(0,h-orangeHeight,w,orangeHeight);
+        
+        Rectangle<float> logoBound { w/2.f-30, h-orangeHeight + 2.f, 60, orangeHeight - 4.f };
+        surgeLogo->drawWithin(g, logoBound, RectanglePlacement::xMid | RectanglePlacement::yMid, 1.0 );
+        
+        g.setColour(findColour(SurgeColourIds::blue));
+        g.drawLine(0,h-orangeHeight,w,h-orangeHeight);
+    }
+    
 };
