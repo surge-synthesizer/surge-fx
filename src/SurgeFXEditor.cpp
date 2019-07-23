@@ -68,6 +68,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     }
 
     std::vector<std::string> fxnm = { "delay", "reverb", "phaser", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco" };
+    int en = processor.getEffectType() - 1;
     for( int i=0; i<10; ++i )
     {
         selectType[i].setButtonText(fxnm[i]);
@@ -76,10 +77,18 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         int bysz = 40;
         int bymg = 10;
         juce::Rectangle<int> bpos { ( i % 5 ) * bxsz + bxmg, (i/5) * bysz + bymg, bxsz, bysz };
-        //selectType[i].setRadioGroupId(FxTypeGroup);
-        //selectType[i].setClickingTogglesState(true);
+        selectType[i].setRadioGroupId(FxTypeGroup);
         selectType[i].setBounds(bpos);
+        selectType[i].setClickingTogglesState(true);
         selectType[i].onClick = [this,i] { this->setEffectType(i+1); };
+        if( i == en )
+        {
+            selectType[i].setToggleState(true,  NotificationType::dontSendNotification);
+        }
+        else
+        {
+            selectType[i].setToggleState(false,  NotificationType::dontSendNotification);
+        }
         addAndMakeVisible(selectType[i]);
     }
     
@@ -94,6 +103,7 @@ SurgefxAudioProcessorEditor::~SurgefxAudioProcessorEditor()
 void SurgefxAudioProcessorEditor::setEffectType(int i)
 {
     processor.resetFxType(i);
+    blastToggleState(i-1);
     for( int i=0; i<n_fx_params; ++i )
     {
         fxGroupLabel[i].setText(processor.getParamGroup(i).c_str(), NotificationType::dontSendNotification);
@@ -116,7 +126,8 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
             }
             else
             {
-                // My type has changed
+                // My type has changed - blow out the toggle states by hand
+                blastToggleState(processor.getEffectType()-1);
                 for( int i=0; i<n_fx_params; ++i )
                 {
                     fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
@@ -126,6 +137,14 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
                 }
             }
         }
+}
+
+void SurgefxAudioProcessorEditor::blastToggleState(int w)
+{
+    for( auto i=0; i<10; ++i )
+    {
+        selectType[i].setToggleState( i == w, NotificationType::dontSendNotification );
+    }
 }
 
 //==============================================================================

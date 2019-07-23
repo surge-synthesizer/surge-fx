@@ -63,6 +63,10 @@ public:
     void setStateInformation (const void* data, int sizeInBytes) override;    
 
 
+    int getEffectType()
+    {
+        return effectNum;
+    }
     float getFXStorageValue01(int i)
     {
         return fxstorage->p[fx_param_remap[i]].get_value_f01();

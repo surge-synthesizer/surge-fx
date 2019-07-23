@@ -13,7 +13,7 @@ cd (someplace)
 git clone https://github.com/surge-synthesizer/surge-fx
 cd surge-fx
 git submodule update --init --recursive
-make build
+make -f Makefile.mac build
 ```
 
 and you should in theory get a VST3 and AU ready to go.
@@ -21,11 +21,7 @@ and you should in theory get a VST3 and AU ready to go.
 
 ## Linux
 
-Only difference is the "-f Makefile.lin"
-
-I will fix that one day soon. 
-
-Also linux only builds standalone not VST3 now. I don't quite know why.
+JUCE doesn't support VST3 so you only get a standalone JACK application.
 
 ```
 cd (someplace)
@@ -35,8 +31,8 @@ git submodule update --init --recursive
 make -f Makefile.lin build
 ```
 
-On linux, and only on linux, if you are a licensee to the Steinberg VST2
-distribution and want to build a VST2, you can do the following
+Since JUCE doesn't support VST3, on linux, and only on linux, if you are a 
+licensee to the Steinberg VST2 distribution and want to build a VST2, you can do the following
 
 ```
 make -f Makefile.lin super-clean
@@ -48,4 +44,12 @@ and our Makefile will reconfigure jucer to eject a VST2
 
 ## Windows
 
-Coming soon.
+Windows builds. Because the windows toolchain isn't unixy there's not a nice makefile.
+
+But if you are in shell set up for 64 bit vs2017 then `Make-win.bat` will probably get you there.
+If not, look at what it does and do that. 
+
+## Azure Pipelines
+
+The azure pipelines run the mac and windows builds right now and upload the result to a zip.
+The main surge Release pipeline also builds the mac fx.
