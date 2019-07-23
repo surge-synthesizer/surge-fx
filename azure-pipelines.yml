@@ -66,7 +66,7 @@ jobs:
 
   - bash: |
       cd Builds/VisualStudio2017/x64
-      7z.exe a ..\..\..\products\surge-fx-win.zip Release
+      7z.exe a ../../../products/surge-fx-win.zip Release
     displayName: Build Windows sln file
     condition: variables.isWindows
 
