@@ -162,7 +162,8 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         auto outL = mainInputOutput.getWritePointer(0, outPos);
         auto outR = mainInputOutput.getWritePointer(1, outPos);
 
-        if( effectNum == fxt_vocoder )
+        auto sideChainBus = getBus(true, 1);
+        if( effectNum == fxt_vocoder && sideChainBus && sideChainBus->isEnabled() )
         {
             auto sideL = sideChainInput.getReadPointer(0, outPos);
             auto sideR = sideChainInput.getReadPointer(1, outPos);

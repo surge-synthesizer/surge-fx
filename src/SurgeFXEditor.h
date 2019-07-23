@@ -39,9 +39,8 @@ private:
     SurgefxAudioProcessor& processor;
 
     Slider fxParamSliders[n_fx_params];
-    Label  fxNameLabel[n_fx_params];
-    Label  fxGroupLabel[n_fx_params];
-    Label  fxValueLabel[n_fx_params];
+    SurgeFXParamDisplay fxParamDisplay[n_fx_params];
+    
     TextButton selectType[10]; // this had better match the list of fxnames in the constructor
     Slider fxTypeSlider;
 

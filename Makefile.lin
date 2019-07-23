@@ -27,6 +27,13 @@ Builds/LinuxMakefile/Makefile:	assets/JUCE surge-fx.jucer
 build:	Builds/LinuxMakefile/Makefile
 	cd Builds/LinuxMakefile && make -j 4
 
+zip: build
+	mkdir -p products/surge-fx
+	cp Builds/LinuxMakefile/build/surge-fx products/surge-fx
+	cd products && tar cvzf surge-fx-$(SURGE_FX_VERSION)-$(BUILDDATE).tar.gz surge-fx
+	rm -rf products/surge-fx
+
+
 clean:
 	cd Builds/LinuxMakefile && make clean
 
