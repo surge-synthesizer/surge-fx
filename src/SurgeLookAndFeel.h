@@ -77,6 +77,30 @@ public:
         auto l = Line<float>(thumbPoint, bounds.getCentre());
         g.drawLine(l, thumbWidth );
     }
+
+    virtual void drawButtonBackground(Graphics &g,
+                                      Button &button,
+                                      const Colour &backgroundColour,
+                                      bool 	shouldDrawButtonAsHighlighted,
+                                      bool 	shouldDrawButtonAsDown
+        ) override
+    {
+        auto bounds = button.getLocalBounds().toFloat().reduced (0.5f, 0.5f);
+        auto col  = findColour(SurgeColourIds::orangeDark);
+
+        if( shouldDrawButtonAsHighlighted )
+            col = findColour(SurgeColourIds::blue);
+
+        if( shouldDrawButtonAsDown )
+            col = Colour(18 * 1.2, 52 * 1.2, 99 * 1.2);
+
+        if (button.getToggleState() )
+            col = findColour(SurgeColourIds::orange);
+        
+        g.setColour(col);
+        g.fillRoundedRectangle(bounds, 3);
+
+    }
     
     void paintComponentBackground(Graphics &g, int w, int h)
     {

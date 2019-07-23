@@ -45,6 +45,8 @@ private:
     TextButton selectType[10]; // this had better match the list of fxnames in the constructor
     Slider fxTypeSlider;
 
+    void blastToggleState(int i);
+    
     std::unique_ptr<SurgeLookAndFeel> surgeLookFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SurgefxAudioProcessorEditor)
