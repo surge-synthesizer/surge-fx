@@ -1,3 +1,5 @@
+// -*- mode: c++-mode -*-
+
 #include "../JuceLibraryCode/JuceHeader.h"
 
 class SurgeLookAndFeel : public LookAndFeel_V4
@@ -85,11 +87,12 @@ public:
                                       bool 	shouldDrawButtonAsDown
         ) override
     {
-        auto bounds = button.getLocalBounds().toFloat().reduced (0.5f, 0.5f);
-        auto col  = findColour(SurgeColourIds::orangeDark);
+        auto bounds = button.getLocalBounds().toFloat().reduced (2.f, 2.f);
+        auto col    = findColour(SurgeColourIds::orangeDark);
+        auto edge   = findColour(SurgeColourIds::blue);
 
         if( shouldDrawButtonAsHighlighted )
-            col = findColour(SurgeColourIds::blue);
+            col = Colour(18 * 1.4, 52 * 1.4, 99 * 1.4);
 
         if( shouldDrawButtonAsDown )
             col = Colour(18 * 1.2, 52 * 1.2, 99 * 1.2);
@@ -99,6 +102,8 @@ public:
         
         g.setColour(col);
         g.fillRoundedRectangle(bounds, 3);
+        g.setColour(edge);
+        g.drawRoundedRectangle(bounds, 3, 1);
 
     }
     
@@ -118,3 +123,36 @@ public:
     }
     
 };
+
+class SurgeFXParamDisplay : public Component
+{
+public:
+    virtual void setGroup( std::string grp ) { group = grp; repaint(); };
+    virtual void setName( std::string nm ) { name = nm; repaint(); }
+    virtual void setDisplay( std::string dis ) { display = dis; repaint(); };
+    
+    virtual void paint(Graphics &g)
+    {
+        auto bounds = getLocalBounds().toFloat().reduced (2.f, 2.f);
+        auto col = findColour(SurgeLookAndFeel::SurgeColourIds::orange);
+        g.setColour(Colour(0,0,0));
+        g.fillRoundedRectangle(bounds, 5);
+        g.setColour(col);
+        g.drawRoundedRectangle(bounds, 5, 1);
+
+        g.setColour(Colour(255,255,255));
+        g.setFont(10);
+        g.drawSingleLineText( group, bounds.getX() + 5, bounds.getY() + 2 + 10 );
+        g.setFont(12);
+        g.drawSingleLineText( name, bounds.getX() + 5, bounds.getY() + 2 + 10 + 3 + 11 );
+
+        g.setFont(20);
+        g.drawSingleLineText( display, bounds.getX() + 5, bounds.getY() + bounds.getHeight() - 5 );
+    }
+
+private: 
+    std::string group = "Group";
+    std::string name = "Effect";
+    std::string display = "0.03 %";
+};
+

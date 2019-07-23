@@ -19,7 +19,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     setLookAndFeel(surgeLookFeel.get());
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (600, 55 * 6 + 150);
+    setSize (450, 55 * 6 + 150);
     setResizable(false, false); // For now
 
     for( int i=0; i<n_fx_params; ++i )
@@ -33,8 +33,8 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         fxParamSliders[i].setChangeNotificationOnlyOnRelease(false);
         fxParamSliders[i].onValueChange = [i, this]() {
             this->processor.setFXParamValue01(i, this->fxParamSliders[i].getValue() );
-            fxValueLabel[i].setText(processor.getParamValueFromFloat(i, this->fxParamSliders[i].getValue()),
-                                    NotificationType::dontSendNotification);
+            fxParamDisplay[i].setDisplay(processor.getParamValueFromFloat(i, this->fxParamSliders[i].getValue()));
+                                      
         };
         fxParamSliders[i].onDragStart = [i,this]() {
             this->processor.setUserEditingFXParam(i,true);
@@ -44,27 +44,12 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         };
         addAndMakeVisible(&(fxParamSliders[i]));
 
-        juce::Rectangle<int> groupPos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100, getWidth()/2 - 75, 12 };
-        juce::Rectangle<int> namePos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100 + 12 , getWidth()/2 - 75, 18 };
-        juce::Rectangle<int> valuePos { ( i / 6 ) * getWidth()/2 + 10 + 60, ( i % 6 ) * 60 + 100 + 30, getWidth()/2 - 75, 25 };
-
-        fxGroupLabel[i].setText(processor.getParamGroup(i).c_str(), NotificationType::dontSendNotification);
-        fxGroupLabel[i].setFont(Font(10));
-        fxGroupLabel[i].setJustificationType(Justification::left | Justification::top );
-        fxGroupLabel[i].setBounds(groupPos);
-        addAndMakeVisible(fxGroupLabel[i]);
-        
-        fxNameLabel[i].setText(processor.getParamName(i).c_str(), NotificationType::dontSendNotification);
-        fxNameLabel[i].setFont(Font(12));
-        fxNameLabel[i].setJustificationType(Justification::left | Justification::top );
-        fxNameLabel[i].setBounds(namePos);
-        addAndMakeVisible(fxNameLabel[i]);
-
-        fxValueLabel[i].setText(processor.getParamValue(i).c_str(), NotificationType::dontSendNotification);
-        fxValueLabel[i].setFont(Font(16));
-        fxValueLabel[i].setJustificationType(Justification::left | Justification::top );
-        fxValueLabel[i].setBounds(valuePos);
-        addAndMakeVisible(fxValueLabel[i]);
+        juce::Rectangle<int> dispPos { ( i / 6 ) * getWidth() / 2 + 4 + 60,
+                ( i % 6 ) * 60 + 100,
+                getWidth() / 2 - 68,
+                55 };
+        fxParamDisplay[i].setBounds(dispPos);
+        addAndMakeVisible(fxParamDisplay[i]);
     }
 
     std::vector<std::string> fxnm = { "delay", "reverb", "phaser", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco" };
@@ -106,8 +91,8 @@ void SurgefxAudioProcessorEditor::setEffectType(int i)
     blastToggleState(i-1);
     for( int i=0; i<n_fx_params; ++i )
     {
-        fxGroupLabel[i].setText(processor.getParamGroup(i).c_str(), NotificationType::dontSendNotification);
-        fxNameLabel[i].setText(processor.getParamName(i).c_str(), NotificationType::dontSendNotification);
+        fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
+        fxParamDisplay[i].setName(processor.getParamName(i).c_str());
         fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
     }
 }
@@ -122,7 +107,7 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
             if( i < n_fx_params )
             {
                 fxParamSliders[i].setValue(fv[i], NotificationType::dontSendNotification);
-                fxValueLabel[i].setText(processor.getParamValue(i), NotificationType::dontSendNotification);
+                fxParamDisplay[i].setDisplay(processor.getParamValue(i));
             }
             else
             {
@@ -131,8 +116,8 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
                 for( int i=0; i<n_fx_params; ++i )
                 {
                     fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
-                    fxGroupLabel[i].setText(processor.getParamGroup(i).c_str(), NotificationType::dontSendNotification);
-                    fxNameLabel[i].setText(processor.getParamName(i).c_str(), NotificationType::dontSendNotification);
+                    fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
+                    fxParamDisplay[i].setName(processor.getParamName(i).c_str());
                     fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
                 }
             }
