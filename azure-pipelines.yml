@@ -66,8 +66,11 @@ jobs:
 
   - bash: |
       cd Builds/VisualStudio2017/x64
-      7z.exe a ../../../products/surge-fx-win.zip Release
-    displayName: Build Windows sln file
+      mkdir assets
+      mv Release/Standalone\ Plugin/surge-fx.exe assets/
+      mv Release/VST3/surge-fx.vst3 assets/
+      7z.exe a ../../../products/surge-fx-win.zip assets 
+    displayName: Build Windows zip
     condition: variables.isWindows
 
   - task: PublishPipelineArtifact@0
@@ -95,6 +98,7 @@ jobs:
 
   - bash: |
      scripts/release-notes.sh > $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
+     ls $(Build.ArtifactStagingDirectory)
     displayName: Fake up release notes
 
   - task: GitHubRelease@0
@@ -107,5 +111,5 @@ jobs:
       target: '$(Build.SourceVersion)'
       addChangeLog: false
       releaseNotesFile: $(Build.ArtifactStagingDirectory)/ReleaseNotes.md
-      assets: $(Build.ArtifactStagingDirectory)/*.dmg
+      assets: $(Build.ArtifactStagingDirectory)/*.*
 
