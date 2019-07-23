@@ -1,10 +1,16 @@
 # Surge-FX Standalone
 
-This is the Surge FX set as a standalone AU and VST3.
+This is the Surge FX set as a standalone plugin and app.
 
-Right now it is mac only and unusable.
+The software buidls and works mac linux and windows. It is currently in an early beta state. If you want
+a DAW plugin on linux you need to build it yourself if you are a VST2 licensee. For Mac and Windows, 
+[you can get binaries on every push to master](releases/). 
 
-But if you are brave 
+There's no manual yet but it is pretty straight forward.
+
+If you find a bug please let us know on our slack or open an issue.
+
+Instructions to build below.
 
 ## Macintosh
 
