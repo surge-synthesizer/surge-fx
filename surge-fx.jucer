@@ -203,16 +203,6 @@
         <GROUP id="{664DD30A-8480-9AE6-4699-CB5626CBAB01}" name="headless">
           <FILE id="jQ8i3S" name="HeadlessPluginLayerProxy.h" compile="0" resource="0"
                 file="deps/surge/src/headless/HeadlessPluginLayerProxy.h"/>
-          <FILE id="uk6QP2" name="HeadlessUtils.cpp" compile="1" resource="0"
-                file="deps/surge/src/headless/HeadlessUtils.cpp"/>
-          <FILE id="rrTsfe" name="HeadlessUtils.h" compile="0" resource="0" file="deps/surge/src/headless/HeadlessUtils.h"/>
-          <FILE id="lHbMWJ" name="LinkFixesHeadless.cpp" compile="1" resource="0"
-                file="deps/surge/src/headless/LinkFixesHeadless.cpp"/>
-          <FILE id="ag8MP6" name="main.cpp" compile="1" resource="0" file="deps/surge/src/headless/main.cpp"/>
-          <FILE id="uV83mC" name="Player.cpp" compile="1" resource="0" file="deps/surge/src/headless/Player.cpp"/>
-          <FILE id="EaclVs" name="Player.h" compile="0" resource="0" file="deps/surge/src/headless/Player.h"/>
-          <FILE id="QtN9dO" name="Stress.cpp" compile="1" resource="0" file="deps/surge/src/headless/Stress.cpp"/>
-          <FILE id="P6mnAB" name="Stress.h" compile="0" resource="0" file="deps/surge/src/headless/Stress.h"/>
           <FILE id="MFKMQS" name="UserInteractionsHeadless.cpp" compile="1" resource="0"
                 file="deps/surge/src/headless/UserInteractionsHeadless.cpp"/>
         </GROUP>
