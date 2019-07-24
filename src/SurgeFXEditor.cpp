@@ -49,6 +49,10 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
                 getWidth() / 2 - 68,
                 55 };
         fxParamDisplay[i].setBounds(dispPos);
+        fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
+        fxParamDisplay[i].setName(processor.getParamName(i).c_str());
+        fxParamDisplay[i].setDisplay(processor.getParamValue(i));
+
         addAndMakeVisible(fxParamDisplay[i]);
     }
 
