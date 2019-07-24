@@ -11,28 +11,60 @@ public:
 
     enum SurgeColourIds
     {
-        grayBg = 0x2700001,
+        componentBgStart = 0x2700001,
+        componentBgEnd,
+        
         orange,
         orangeMedium,
         orangeDark, 
         blue,
+
+        knobEdge,
+        knobBg,
         knobHandle,
+
+        knobEdgeDisable,
+        knobBgDisable,
+        knobHandleDisable,
+
+        paramEnabledBg,
+        paramEnabledEdge,
+        paramDisabledBg,
+        paramDisabledEdge,
+        paramDisplay
     };
 
     SurgeLookAndFeel() {
         Colour surgeGrayBg = Colour(205,206,212);
         Colour surgeOrange = Colour(255,144,0);
         Colour surgeBlue = Colour(18,52,99);
+        Colour white = Colour(255,255,255);
+        Colour black = Colour(0,0,0);
+        Colour surgeOrangeDark = Colour(101,50,3);
+        Colour surgeOrangeMedium = Colour(227,112,8);
         
-        setColour(SurgeColourIds::grayBg, surgeGrayBg);
+        setColour(SurgeColourIds::componentBgStart, surgeGrayBg.interpolatedWith(surgeOrangeMedium, 0.1));
+        setColour(SurgeColourIds::componentBgEnd, surgeGrayBg);
         setColour(SurgeColourIds::orange, surgeOrange);
-        setColour(SurgeColourIds::orangeDark, Colour(101, 50, 3));
-        setColour(SurgeColourIds::orangeMedium, Colour(227, 112, 8));
+        setColour(SurgeColourIds::orangeDark, surgeOrangeDark);
+        setColour(SurgeColourIds::orangeMedium, surgeOrangeMedium);
         setColour(SurgeColourIds::blue, surgeBlue);
-        setColour(SurgeColourIds::knobHandle, Colour(255,255,255));
-        
-        setColour(Label::ColourIds::textColourId, surgeBlue);
 
+        setColour(SurgeColourIds::knobHandle, white);
+        setColour(SurgeColourIds::knobBg, surgeOrange);
+        setColour(SurgeColourIds::knobEdge, surgeBlue);
+
+        auto disableOpacity = 0.55;
+        setColour(SurgeColourIds::knobHandleDisable, surgeBlue.interpolatedWith(surgeGrayBg, disableOpacity));
+        setColour(SurgeColourIds::knobBgDisable, surgeOrange.interpolatedWith(surgeGrayBg, disableOpacity));
+        setColour(SurgeColourIds::knobEdgeDisable, surgeBlue);
+
+        setColour(SurgeColourIds::paramEnabledBg, black);
+        setColour(SurgeColourIds::paramEnabledEdge, surgeOrange);
+        setColour(SurgeColourIds::paramDisabledBg, black.interpolatedWith(surgeGrayBg, disableOpacity));
+        setColour(SurgeColourIds::paramDisabledEdge, surgeBlue);
+        setColour(SurgeColourIds::paramDisplay, white);
+        
         surgeLogo = Drawable::createFromImageData (BinaryData::SurgeLogoOnlyBlue_svg, BinaryData::SurgeLogoOnlyBlue_svgSize);
     }
 
@@ -43,14 +75,15 @@ public:
                                   float rotaryStartAngle, float rotaryEndAngle,
                                   Slider &slider) override
     {
-        auto fill = findColour(SurgeColourIds::orange);
-        auto edge = findColour(SurgeColourIds::blue);
+        auto fill = findColour(SurgeColourIds::knobBg);
+        auto edge = findColour(SurgeColourIds::knobEdge);
         auto tick = findColour(SurgeColourIds::knobHandle);
 
         if( ! slider.isEnabled() )
         {
-            fill = findColour(SurgeColourIds::orangeMedium);
-            tick = edge;
+            fill = findColour(SurgeColourIds::knobBgDisable);
+            edge = findColour(SurgeColourIds::knobEdgeDisable);
+            tick = findColour(SurgeColourIds::knobHandleDisable);
         }
         
 
@@ -109,9 +142,16 @@ public:
     
     void paintComponentBackground(Graphics &g, int w, int h)
     {
-        g.fillAll(findColour(SurgeColourIds::grayBg));
-
         int orangeHeight = 20;
+
+        g.fillAll(findColour(SurgeColourIds::componentBgStart));
+
+        ColourGradient cg(findColour(SurgeColourIds::componentBgStart), 0, 0,
+                          findColour(SurgeColourIds::componentBgEnd), 0, h-orangeHeight,
+                          false);
+        g.setGradientFill(cg);
+        g.fillRect(0,0,w,h-orangeHeight);
+
         g.setColour(findColour(SurgeColourIds::orange));
         g.fillRect(0,h-orangeHeight,w,orangeHeight);
         
@@ -134,25 +174,78 @@ public:
     virtual void paint(Graphics &g)
     {
         auto bounds = getLocalBounds().toFloat().reduced (2.f, 2.f);
-        auto col = findColour(SurgeLookAndFeel::SurgeColourIds::orange);
-        g.setColour(Colour(0,0,0));
+        auto edge = findColour(SurgeLookAndFeel::SurgeColourIds::paramEnabledEdge);
+
+        if( isEnabled() )
+            g.setColour(findColour(SurgeLookAndFeel::SurgeColourIds::paramEnabledBg));
+        else
+        {
+            g.setColour(findColour(SurgeLookAndFeel::SurgeColourIds::paramDisabledBg));
+            edge = findColour(SurgeLookAndFeel::SurgeColourIds::paramDisabledEdge);
+        }
+        
         g.fillRoundedRectangle(bounds, 5);
-        g.setColour(col);
+        g.setColour(edge);
         g.drawRoundedRectangle(bounds, 5, 1);
 
-        g.setColour(Colour(255,255,255));
-        g.setFont(10);
-        g.drawSingleLineText( group, bounds.getX() + 5, bounds.getY() + 2 + 10 );
-        g.setFont(12);
-        g.drawSingleLineText( name, bounds.getX() + 5, bounds.getY() + 2 + 10 + 3 + 11 );
-
-        g.setFont(20);
-        g.drawSingleLineText( display, bounds.getX() + 5, bounds.getY() + bounds.getHeight() - 5 );
+        if( isEnabled() )
+        {
+            g.setColour(findColour(SurgeLookAndFeel::SurgeColourIds::paramDisplay));
+            g.setFont(10);
+            g.drawSingleLineText( group, bounds.getX() + 5, bounds.getY() + 2 + 10 );
+            g.setFont(12);
+            g.drawSingleLineText( name, bounds.getX() + 5, bounds.getY() + 2 + 10 + 3 + 11 );
+            
+            g.setFont(20);
+            g.drawSingleLineText( display, bounds.getX() + 5, bounds.getY() + bounds.getHeight() - 5 );
+        }
     }
 
 private: 
-    std::string group = "Group";
-    std::string name = "Effect";
-    std::string display = "0.03 %";
+    std::string group = "Uninit";
+    std::string name = "Uninit";
+    std::string display = "SoftwareError";
+};
+
+class SurgeTempoSyncSwitch : public ToggleButton {
+protected:
+    virtual void paintButton(Graphics &g,
+                             bool shouldDrawButtonAsHighlighted,
+                             bool shouldDrawButtonAsDown) override {
+        auto bounds = getLocalBounds().toFloat().reduced (1.f, 1.f);
+        auto edge = findColour(SurgeLookAndFeel::SurgeColourIds::paramEnabledEdge);
+        auto handle = findColour(SurgeLookAndFeel::SurgeColourIds::orange);
+        float radius = 5;
+        
+        if( isEnabled() )
+            g.setColour(findColour(SurgeLookAndFeel::SurgeColourIds::paramEnabledBg));
+        else
+        {
+            g.setColour(findColour(SurgeLookAndFeel::SurgeColourIds::paramDisabledBg));
+            edge = findColour(SurgeLookAndFeel::SurgeLookAndFeel::paramDisabledEdge);
+        }
+        
+        g.fillRoundedRectangle(bounds, radius);
+        g.setColour(edge);
+        g.drawRoundedRectangle(bounds, radius, 1);
+
+        if( ! isEnabled() ) return;
+        
+        float controlRadius = bounds.getWidth() - 3;
+        float yPos;
+        float xPos = bounds.getX() + bounds.getWidth() / 2.0 - controlRadius / 2.0;
+        if( getToggleState() )
+        {
+            yPos = bounds.getY() + 2;
+        }
+        else
+        {
+            yPos = bounds.getY() + bounds.getHeight() - controlRadius - 2;
+        }
+        auto kbounds = juce::Rectangle<float> (xPos, yPos, controlRadius, controlRadius);
+        g.setColour(handle);
+        g.fillEllipse(kbounds);
+
+    }
 };
 

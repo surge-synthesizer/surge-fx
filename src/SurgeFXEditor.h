@@ -40,11 +40,13 @@ private:
 
     Slider fxParamSliders[n_fx_params];
     SurgeFXParamDisplay fxParamDisplay[n_fx_params];
+    SurgeTempoSyncSwitch fxTempoSync[n_fx_params];
     
     TextButton selectType[10]; // this had better match the list of fxnames in the constructor
     Slider fxTypeSlider;
 
     void blastToggleState(int i);
+    void resetLabels();
     
     std::unique_ptr<SurgeLookAndFeel> surgeLookFeel;
     

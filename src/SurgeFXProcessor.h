@@ -79,11 +79,27 @@ public:
     {
         *(fxParams[i]) = f;
     }
-    bool isDirtyParam(int i)
+    void setFXParamTempoSync(int i, bool b)
     {
-        return false;
+        fxTempoSync[i]->setValueNotifyingHost( b );
     }
-
+    bool getFXParamTempoSync(int i)
+    {
+        return *(fxTempoSync[i]);
+    }
+    void setFXStorageTempoSync(int i, bool b)
+    {
+        fxstorage->p[fx_param_remap[i]].temposync = b;
+    }
+    bool getFXStorageTempoSync(int i)
+    {
+        return fxstorage->p[fx_param_remap[i]].temposync;
+    }
+    bool canTempoSync(int i)
+    {
+        return fxstorage->p[fx_param_remap[i]].can_temposync();
+    }
+    
     virtual void parameterValueChanged(int parameterIndex, float newValue ) override {
         if( supressParameterUpdates ) return;
         
@@ -102,6 +118,12 @@ public:
 
     virtual void handleAsyncUpdate() override {
         paramChangeListener();
+        for( int i=0; i<n_fx_params; ++i )
+            if( wasTempoSyncChanged[i] )
+            {
+                wasTempoSyncChanged[i] = false;
+                fxTempoSync[i]->endChangeGesture();
+            }
     }
 
     void setParameterChangeListener(std::function<void()> l) {
@@ -129,6 +151,19 @@ public:
         else
         {
             fxBaseParams[i]->endChangeGesture();
+        }
+    }
+
+    virtual void setUserEditingTemposync(int i, bool b)
+    {
+        if(b)
+        {
+            fxTempoSync[i]->beginChangeGesture();
+        }
+        else
+        {
+            wasTempoSyncChanged[i] = true;
+            triggerAsyncUpdate();
         }
     }
 
@@ -176,16 +211,19 @@ public:
     
 private:
     //==============================================================================
-    AudioProcessorParameter *fxBaseParams[n_fx_params + 1];
+    AudioProcessorParameter *fxBaseParams[2 * n_fx_params + 1];
 
     // These are just copyes of the pointer from above with the cast done to make the code look nicer
     AudioParameterFloat *fxParams[n_fx_params];
     AudioParameterInt *fxType;
+    AudioParameterBool *fxTempoSync[n_fx_params];
     
-    std::atomic<bool>    changedParams[n_fx_params+1];
-    std::atomic<float>   changedParamsValue[n_fx_params+1];
-    std::atomic<bool>    isUserEditing[n_fx_params+1];
+    std::atomic<bool>    changedParams[2*n_fx_params+1];
+    std::atomic<float>   changedParamsValue[2*n_fx_params+1];
+    std::atomic<bool>    isUserEditing[2*n_fx_params+1];
+    std::atomic<bool>    wasTempoSyncChanged[n_fx_params];
     std::function<void()>  paramChangeListener;
+    float lastBPM = -1;
     bool supressParameterUpdates = false;
     struct SupressGuard {
         bool *s;

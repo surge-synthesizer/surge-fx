@@ -47,11 +47,27 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
     addParameter(fxType = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_vocoder, effectNum ));
     fxBaseParams[n_fx_params] = fxType;
 
-    for( int i=0; i< n_fx_params + 1; ++i )
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        char lb[256], nm[256];
+        snprintf(lb, 256, "fx_temposync_%d", i );
+        snprintf(nm, 256, "FX Temposync %d", i );
+        
+        addParameter(fxTempoSync[i] = new AudioParameterBool(lb, nm, false));
+        *(fxTempoSync[i]) = fxstorage->p[fx_param_remap[i]].temposync;
+        fxBaseParams[i + n_fx_params + 1] = fxTempoSync[i];
+    }
+
+    for( int i=0; i< 2 * n_fx_params + 1; ++i )
     {
         fxBaseParams[i]->addListener(this);
         changedParams[i] = false;
         isUserEditing[i] = false;
+    }
+
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        wasTempoSyncChanged[i] = false;
     }
 
     paramChangeListener = [](){};
@@ -146,6 +162,22 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
 {
     ScopedNoDenormals noDenormals;
 
+    float thisBPM = 120.0;
+    auto playhead = getPlayHead();
+    if( playhead )
+    {
+        AudioPlayHead::CurrentPositionInfo cp;
+        playhead->getCurrentPosition(cp);
+        thisBPM = cp.bpm;
+    }
+
+    if( storage && thisBPM != lastBPM )
+    {
+        lastBPM = thisBPM;
+        storage->temposyncratio = thisBPM / 120.0;
+        storage->temposyncratio_inv = 1.f / storage->temposyncratio;
+    }
+    
     auto mainInputOutput = getBusBuffer(buffer, true, 0);
     auto sideChainInput = getBusBuffer(buffer, true, 1);
 
@@ -175,6 +207,7 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
         for( int i=0; i<n_fx_params; ++i )
         {
             fxstorage->p[fx_param_remap[i]].set_value_f01(*fxParams[i]);
+            fxstorage->p[fx_param_remap[i]].temposync = *(fxTempoSync[i]);
         }
         copyGlobaldataSubset(storage_id_start, storage_id_end);
 
@@ -222,6 +255,11 @@ void SurgefxAudioProcessor::getStateInformation (MemoryBlock& destData)
         snprintf(nm, 256, "fxp_%d", i );
         float val = *(fxParams[i]);
         xml->setAttribute(nm, val);
+
+        snprintf(nm, 256, "fxp_temposync_%d", i );
+        bool b = *(fxTempoSync[i]);
+        xml->setAttribute(nm, b);
+
     }
     xml->setAttribute( "fxt", effectNum );
 
@@ -244,6 +282,11 @@ void SurgefxAudioProcessor::setStateInformation (const void* data, int sizeInByt
                 snprintf(nm, 256, "fxp_%d", i );
                 float v = xmlState->getDoubleAttribute(nm, 0.0);
                 fxstorage->p[fx_param_remap[i]].set_value_f01(v);
+
+                snprintf(nm, 256, "fxp_temposync_%d", i );
+                bool b = xmlState->getBoolAttribute(nm, b);
+                fxstorage->p[fx_param_remap[i]].temposync = b;
+           
             }
             updateJuceParamsFromStorage();
         }
@@ -326,6 +369,7 @@ void SurgefxAudioProcessor::updateJuceParamsFromStorage()
     for( int i=0; i<n_fx_params; ++i )
     {
         *(fxParams[i]) = fxstorage->p[fx_param_remap[i]].get_value_f01();
+        *(fxTempoSync[i]) = fxstorage->p[fx_param_remap[i]].temposync;
     }
     *(fxType) = effectNum;
     
