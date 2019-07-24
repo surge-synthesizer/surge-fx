@@ -19,7 +19,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     setLookAndFeel(surgeLookFeel.get());
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (450, 55 * 6 + 150);
+    setSize (500, 55 * 6 + 150);
     setResizable(false, false); // For now
 
     for( int i=0; i<n_fx_params; ++i )
@@ -28,13 +28,13 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
         fxParamSliders[i].setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
         fxParamSliders[i].setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0 );
-        juce::Rectangle<int> position { ( i / 6 ) * getWidth()/2 + 10, ( i % 6 ) * 60 + 100, 55, 55 };
+        juce::Rectangle<int> position { ( i / 6 ) * getWidth()/2 + 5, ( i % 6 ) * 60 + 100, 55, 55 };
         fxParamSliders[i].setBounds(position);
         fxParamSliders[i].setChangeNotificationOnlyOnRelease(false);
+        fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
         fxParamSliders[i].onValueChange = [i, this]() {
             this->processor.setFXParamValue01(i, this->fxParamSliders[i].getValue() );
             fxParamDisplay[i].setDisplay(processor.getParamValueFromFloat(i, this->fxParamSliders[i].getValue()));
-                                      
         };
         fxParamSliders[i].onDragStart = [i,this]() {
             this->processor.setUserEditingFXParam(i,true);
@@ -44,15 +44,34 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         };
         addAndMakeVisible(&(fxParamSliders[i]));
 
-        juce::Rectangle<int> dispPos { ( i / 6 ) * getWidth() / 2 + 4 + 60,
+        juce::Rectangle<int> tsPos {  ( i / 6 ) * getWidth() / 2 + 2 + 55,
+                ( i % 6 ) * 60 + 100 + 12,
+                13,
+                55 -24 };
+        fxTempoSync[i].setBounds(tsPos);
+        fxTempoSync[i].setEnabled(processor.canTempoSync(i));
+        fxTempoSync[i].setToggleState(processor.getFXStorageTempoSync(i), NotificationType::dontSendNotification);
+        fxTempoSync[i].onClick = [i, this]() {
+            this->processor.setUserEditingTemposync(i, true);
+            this->processor.setFXParamTempoSync(i, this->fxTempoSync[i].getToggleState() );
+            this->processor.setFXStorageTempoSync(i, this->fxTempoSync[i].getToggleState() );
+            fxParamDisplay[i].setDisplay(processor.getParamValueFromFloat(i, this->fxParamSliders[i].getValue()));
+            this->processor.setUserEditingTemposync(i, false);
+        };
+
+        addAndMakeVisible(&(fxTempoSync[i]));
+        
+        
+        juce::Rectangle<int> dispPos { ( i / 6 ) * getWidth() / 2 + 4 + 55 + 15,
                 ( i % 6 ) * 60 + 100,
-                getWidth() / 2 - 68,
+                getWidth() / 2 - 68 - 15,
                 55 };
         fxParamDisplay[i].setBounds(dispPos);
         fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
         fxParamDisplay[i].setName(processor.getParamName(i).c_str());
         fxParamDisplay[i].setDisplay(processor.getParamValue(i));
-
+        fxParamDisplay[i].setEnabled(processor.getParamEnabled(i));
+        
         addAndMakeVisible(fxParamDisplay[i]);
     }
 
@@ -89,16 +108,26 @@ SurgefxAudioProcessorEditor::~SurgefxAudioProcessorEditor()
 {
 }
 
+void SurgefxAudioProcessorEditor::resetLabels()
+{
+    for( int i=0; i<n_fx_params; ++i )
+    {
+        fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
+        fxParamDisplay[i].setDisplay(processor.getParamValue(i).c_str());
+        fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
+        fxParamDisplay[i].setName(processor.getParamName(i).c_str());
+        fxParamDisplay[i].setEnabled(processor.getParamEnabled(i));
+        fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
+        fxTempoSync[i].setEnabled(processor.canTempoSync(i));
+        fxTempoSync[i].setToggleState(processor.getFXStorageTempoSync(i), NotificationType::dontSendNotification);
+    }
+}
+
 void SurgefxAudioProcessorEditor::setEffectType(int i)
 {
     processor.resetFxType(i);
     blastToggleState(i-1);
-    for( int i=0; i<n_fx_params; ++i )
-    {
-        fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
-        fxParamDisplay[i].setName(processor.getParamName(i).c_str());
-        fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
-    }
+    resetLabels();
 }
 
 void SurgefxAudioProcessorEditor::paramsChangedCallback() {
@@ -117,13 +146,7 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
             {
                 // My type has changed - blow out the toggle states by hand
                 blastToggleState(processor.getEffectType()-1);
-                for( int i=0; i<n_fx_params; ++i )
-                {
-                    fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
-                    fxParamDisplay[i].setGroup(processor.getParamGroup(i).c_str());
-                    fxParamDisplay[i].setName(processor.getParamName(i).c_str());
-                    fxParamSliders[i].setEnabled(processor.getParamEnabled(i));
-                }
+                resetLabels();
             }
         }
 }
