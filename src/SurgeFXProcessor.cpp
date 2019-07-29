@@ -284,7 +284,7 @@ void SurgefxAudioProcessor::setStateInformation (const void* data, int sizeInByt
                 fxstorage->p[fx_param_remap[i]].set_value_f01(v);
 
                 snprintf(nm, 256, "fxp_temposync_%d", i );
-                bool b = xmlState->getBoolAttribute(nm, b);
+                bool b = xmlState->getBoolAttribute(nm, false);
                 fxstorage->p[fx_param_remap[i]].temposync = b;
            
             }
