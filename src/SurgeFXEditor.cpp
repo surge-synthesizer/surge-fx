@@ -24,7 +24,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
 
     for( int i=0; i<n_fx_params; ++i )
     {
-        fxParamSliders[i].setRange(0.0, 1.0, 0.005 );
+        fxParamSliders[i].setRange(0.0, 1.0, 0.001 );
         fxParamSliders[i].setValue(processor.getFXStorageValue01(i), NotificationType::dontSendNotification);
         fxParamSliders[i].setSliderStyle(Slider::SliderStyle::RotaryHorizontalVerticalDrag);
         fxParamSliders[i].setTextBoxStyle(Slider::TextEntryBoxPosition::NoTextBox, true, 0, 0 );
