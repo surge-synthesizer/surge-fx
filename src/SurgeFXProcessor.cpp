@@ -355,6 +355,12 @@ void SurgefxAudioProcessor::resetFxType(int type, bool updateJuceParams)
 
     reorderSurgeParams();
 
+    /*
+    ** TempoSync settings may linger so whack them all to false again
+    */
+    for( int i=0; i<n_fx_params; ++i )
+        fxstorage->p[i].temposync = false;
+
     if( updateJuceParams )
     {
         updateJuceParamsFromStorage();
