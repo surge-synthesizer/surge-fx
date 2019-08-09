@@ -167,10 +167,6 @@
           <FILE id="YGUB4p" name="precompiled.cpp" compile="1" resource="0" file="deps/surge/src/common/precompiled.cpp"/>
           <FILE id="MsfFx8" name="precompiled.h" compile="0" resource="0" file="deps/surge/src/common/precompiled.h"/>
           <FILE id="TGpAeL" name="resource.h" compile="0" resource="0" file="deps/surge/src/common/resource.h"/>
-          <FILE id="mVwo8V" name="Sample.cpp" compile="1" resource="0" file="deps/surge/src/common/Sample.cpp"/>
-          <FILE id="DvpUyz" name="Sample.h" compile="0" resource="0" file="deps/surge/src/common/Sample.h"/>
-          <FILE id="JXWQvK" name="SampleLoadRiffWave.cpp" compile="1" resource="0"
-                file="deps/surge/src/common/SampleLoadRiffWave.cpp"/>
           <FILE id="nQq5Mf" name="surge_auversion.h" compile="0" resource="0"
                 file="deps/surge/src/common/surge_auversion.h"/>
           <FILE id="XzSdsi" name="SurgeError.cpp" compile="1" resource="0" file="deps/surge/src/common/SurgeError.cpp"/>
@@ -181,8 +177,6 @@
           <FILE id="nYlZWL" name="SurgeStorage.cpp" compile="1" resource="0"
                 file="deps/surge/src/common/SurgeStorage.cpp"/>
           <FILE id="uTHTbG" name="SurgeStorage.h" compile="0" resource="0" file="deps/surge/src/common/SurgeStorage.h"/>
-          <FILE id="kHnfua" name="SurgeStorageLoadWavetable.cpp" compile="1"
-                resource="0" file="deps/surge/src/common/SurgeStorageLoadWavetable.cpp"/>
           <FILE id="CFJULs" name="SurgeSynthesizer.cpp" compile="1" resource="0"
                 file="deps/surge/src/common/SurgeSynthesizer.cpp"/>
           <FILE id="OL8oJ2" name="SurgeSynthesizer.h" compile="0" resource="0"
@@ -199,6 +193,7 @@
           <FILE id="GaaHIU" name="UserInteractions.h" compile="0" resource="0"
                 file="deps/surge/src/common/UserInteractions.h"/>
           <FILE id="FOTJye" name="version.h" compile="0" resource="0" file="deps/surge/src/common/version.h"/>
+          <FILE id="z8XSoE" name="WavSupport.cpp" compile="1" resource="0" file="deps/surge/src/common/WavSupport.cpp"/>
         </GROUP>
         <GROUP id="{664DD30A-8480-9AE6-4699-CB5626CBAB01}" name="headless">
           <FILE id="jQ8i3S" name="HeadlessPluginLayerProxy.h" compile="0" resource="0"
