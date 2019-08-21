@@ -4,7 +4,7 @@ This is the Surge FX set as a standalone plugin and app.
 
 The software buidls and works mac linux and windows. It is currently in an early beta state. If you want
 a DAW plugin on linux you need to build it yourself if you are a VST2 licensee. For Mac and Windows, 
-[you can get binaries on every push to master](releases/). 
+[you can get binaries on every push to master](https://github.com/surge-synthesizer/surge-fx/releases). 
 
 There's no manual yet but it is pretty straight forward.
 
