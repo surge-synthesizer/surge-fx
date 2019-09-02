@@ -12,10 +12,13 @@ jobs:
     matrix:
       mac:
         imageName: 'macos-10.13'
-        isMac: true
+        isMac: True
       win:
         imageName: 'vs2017-win2016'
-        isWindows: true
+        isWindows: True
+      win32bit:
+        imageName: 'vs2017-win2016'
+        isWindows32: True
       linux:
         imageName: 'ubuntu-16.04'
         isLinux: True
@@ -56,7 +59,7 @@ jobs:
       cd ..
       assets/JUCE/Projucer.exe --resave surge-fx.jucer   
     displayName: Build Windows sln file
-    condition: variables.isWindows
+    condition: or(variables.isWindows, variables.isWindows32)
 
   - task: MSBuild@1
     inputs:
@@ -82,6 +85,31 @@ jobs:
       targetPath: 'products/'
     displayName: Publish Windows Zip
     condition: variables.isWindows
+
+  - task: MSBuild@1
+    inputs:
+      solution: 'Builds\VisualStudio2017\surge-fx.sln'
+      maximumCpuCount: true
+      platform: 'Win32'
+      configuration: 'ReleaseWin32'
+    condition: variables.isWindows32
+    displayName: Build Windows Win32
+
+  - bash: |
+      cd Builds/VisualStudio2017/Win32
+      mkdir assets
+      mv ReleaseWin32/Standalone\ Plugin/surge-fx.exe assets/
+      mv ReleaseWin32/VST3/surge-fx.vst3 assets/
+      7z.exe a ../../../products/surge-fx-win-32.zip assets 
+    displayName: Build Windows32 Zip
+    condition: variables.isWindows32
+
+  - task: PublishPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS32_BUILD'
+      targetPath: 'products/'
+    displayName: Publish Windows32 Zip
+    condition: variables.isWindows32
 
 
   - bash: |
@@ -131,6 +159,11 @@ jobs:
   - task: DownloadPipelineArtifact@0
     inputs:
       artifactName: 'WINDOWS_BUILD'
+      targetPath: $(Build.ArtifactStagingDirectory)
+
+  - task: DownloadPipelineArtifact@0
+    inputs:
+      artifactName: 'WINDOWS32_BUILD'
       targetPath: $(Build.ArtifactStagingDirectory)
 
   - task: DownloadPipelineArtifact@0
