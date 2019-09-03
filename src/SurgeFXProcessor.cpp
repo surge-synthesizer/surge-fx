@@ -31,6 +31,7 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
     storage.reset( new SurgeStorage() );
 
     fxstorage = &(storage->getPatch().fx[0]);
+    audio_thread_surge_effect.reset();
     resetFxType(effectNum, false);
     fxstorage->return_level.id = -1;
     setupStorageRanges((Parameter *)fxstorage, &(fxstorage->p[n_fx_params-1]));
@@ -69,8 +70,9 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
     {
         wasTempoSyncChanged[i] = false;
     }
-
+    
     paramChangeListener = [](){};
+    resettingFx = false;
 }
 
 SurgefxAudioProcessor::~SurgefxAudioProcessor()
@@ -160,6 +162,8 @@ bool SurgefxAudioProcessor::isBusesLayoutSupported (const BusesLayout& layouts) 
 
 void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer& midiMessages)
 {
+    if( resettingFx ) return;
+    
     ScopedNoDenormals noDenormals;
 
     float thisBPM = 120.0;
@@ -183,13 +187,20 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
 
     // FIXME: Check: has type changed?
     int pt = *fxType;
+
     if( effectNum != pt )
     {
         effectNum = pt;
         resetFxType(effectNum);
     }
+
+    if( audio_thread_surge_effect.get() != surge_effect.get() )
+    {
+        audio_thread_surge_effect = surge_effect;
+    }
     
-    for(int outPos = 0; outPos < buffer.getNumSamples(); outPos += BLOCK_SIZE )
+
+    for(int outPos = 0; outPos < buffer.getNumSamples() && ! resettingFx; outPos += BLOCK_SIZE )
     {
         auto outL = mainInputOutput.getWritePointer(0, outPos);
         auto outR = mainInputOutput.getWritePointer(1, outPos);
@@ -213,7 +224,7 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
 
         if( is_aligned(outL, 16) && is_aligned( outR, 16 ) )
         {
-            surge_effect->process(outL, outR );
+	    audio_thread_surge_effect->process(outL, outR );
         }
         else
         {
@@ -225,7 +236,7 @@ void SurgefxAudioProcessor::processBlock (AudioBuffer<float>& buffer, MidiBuffer
             memcpy(bufferL, inL, BLOCK_SIZE * sizeof(float));
             memcpy(bufferR, inR, BLOCK_SIZE * sizeof(float));
             
-            surge_effect->process(bufferL, bufferR);
+            audio_thread_surge_effect->process(bufferL, bufferR);
             
             memcpy(outL, bufferL, BLOCK_SIZE * sizeof(float));
             memcpy(outR, bufferR, BLOCK_SIZE * sizeof(float));
@@ -340,6 +351,7 @@ void SurgefxAudioProcessor::reorderSurgeParams() {
 
 void SurgefxAudioProcessor::resetFxType(int type, bool updateJuceParams)
 {
+    resettingFx = true;
     effectNum = type;
     fxstorage->type.val.i = effectNum;
 
@@ -366,7 +378,7 @@ void SurgefxAudioProcessor::resetFxType(int type, bool updateJuceParams)
         updateJuceParamsFromStorage();
     }
 
-    
+    resettingFx = false;    
 }
 
 void SurgefxAudioProcessor::updateJuceParamsFromStorage()

@@ -236,7 +236,10 @@ private:
     
     // Members for the FX. If this looks a lot like surge-rack/SurgeFX.hpp that's not a coincidence
     std::unique_ptr<SurgeStorage> storage;
-    std::unique_ptr<Effect> surge_effect;
+    
+    std::shared_ptr<Effect> surge_effect;
+    std::shared_ptr<Effect> audio_thread_surge_effect;
+    std::atomic<bool> resettingFx;
     FxStorage *fxstorage;
     int storage_id_start, storage_id_end;
 

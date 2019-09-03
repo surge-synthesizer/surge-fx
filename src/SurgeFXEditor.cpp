@@ -101,11 +101,13 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     }
     
 
-    this->processor.setParameterChangeListener([this]() { this->paramsChangedCallback(); });
+    this->processor.setParameterChangeListener([this]() { this->triggerAsyncUpdate(); } );
 }
 
 SurgefxAudioProcessorEditor::~SurgefxAudioProcessorEditor()
 {
+    setLookAndFeel(nullptr);
+    this->processor.setParameterChangeListener([](){});
 }
 
 void SurgefxAudioProcessorEditor::resetLabels()
@@ -128,6 +130,10 @@ void SurgefxAudioProcessorEditor::setEffectType(int i)
     processor.resetFxType(i);
     blastToggleState(i-1);
     resetLabels();
+}
+
+void SurgefxAudioProcessorEditor::handleAsyncUpdate() {
+    paramsChangedCallback();
 }
 
 void SurgefxAudioProcessorEditor::paramsChangedCallback() {
