@@ -15,18 +15,18 @@ assets/juce-5.4.3-osx.zip:
 
 assets/JUCE: assets assets/juce-5.4.3-osx.zip
 
-Builds/MacOSX/surge-fx.xcodeproj/projects.pbxproj:	assets/JUCE surge-fx.jucer
+Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj:	assets/JUCE surge-fx.jucer
 	assets/JUCE/Projucer.app/Contents/MacOS/Projucer --resave surge-fx.jucer
 	touch $@
 
-Builds/MacOSX/build/Release/libsurge-fx.a: Builds/MacOSX/surge-fx.xcodeproj/projects.pbxproj
-	xcodebuild build -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj
+Builds/MacOSX/build/Release/libSurgeEffectsBank.a: Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj
+	xcodebuild build -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
 
-build:	Builds/MacOSX/surge-fx.xcodeproj/projects.pbxproj 
-	xcodebuild build -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj
+build:	Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj 
+	xcodebuild build -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
 
-build-au:	Builds/MacOSX/surge-fx.xcodeproj/projects.pbxproj 
-	xcodebuild build -target "surge-fx - AU" -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj
+build-au:	Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj 
+	xcodebuild build -target "SurgeEffectsBank - AU" -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
 
 validate:	build-au
 	auval -vt aufx VmbA
@@ -35,17 +35,17 @@ validate-dbg:	build-au
 	lldb -- auval -vt aufx VmbA
 
 clean:
-	xcodebuild clean -configuration Release -project Builds/MacOSX/surge-fx.xcodeproj
+	xcodebuild clean -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
 
 super-clean:
 	rm -rf Builds JuceLibraryCode assets
 
 dmg: build
-	rm -rf Builds/MacOSX/surge-fx-nightly
+	rm -rf Builds/MacOSX/SurgeEffectsBank-nightly
 	rm -f *dmg
-	mkdir -p Builds/MacOSX/surge-fx-nightly	
-	cd Builds/MacOSX/build/Release && tar cf - surge-fx.component/* | ( cd ../../surge-fx-nightly ; tar xf - )
-	cd Builds/MacOSX/build/Release && tar cf - surge-fx.vst3/* | ( cd ../../surge-fx-nightly ; tar xf - )
-	cd Builds/MacOSX/ && hdiutil create /tmp/tmp.dmg -ov -volname "SurgeFX_${SURGE_FX_VERSION}_${BUILDDATE}" -fs HFS+ -srcfolder ./surge-fx-nightly/
-	hdiutil convert /tmp/tmp.dmg -format UDZO -o SurgeFX_${SURGE_FX_VERSION}_${BUILDDATE}.dmg
+	mkdir -p Builds/MacOSX/SurgeEffectsBank-nightly	
+	cd Builds/MacOSX/build/Release && tar cf - SurgeEffectsBank.component/* | ( cd ../../SurgeEffectsBank-nightly ; tar xf - )
+	cd Builds/MacOSX/build/Release && tar cf - SurgeEffectsBank.vst3/* | ( cd ../../SurgeEffectsBank-nightly ; tar xf - )
+	cd Builds/MacOSX/ && hdiutil create /tmp/tmp.dmg -ov -volname "SurgeEffectsBank_${SURGE_FX_VERSION}_${BUILDDATE}" -fs HFS+ -srcfolder ./SurgeEffectsBank-nightly/
+	hdiutil convert /tmp/tmp.dmg -format UDZO -o SurgeEffectsBank_${SURGE_FX_VERSION}_${BUILDDATE}.dmg
 

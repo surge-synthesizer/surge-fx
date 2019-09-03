@@ -7,8 +7,8 @@ rem cd ..
 
 assets\JUCE\Projucer.exe --resave surge-fx.jucer
 cd Builds\VisualStudio2017
-msbuild /target:Build surge-fx.sln /p:Configuration=Release;Platform=x64
-msbuild /target:Build surge-fx.sln /p:Configuration=ReleaseWin32;Platform=Win32
+msbuild /target:Build SurgeEffectsBank.sln /p:Configuration=Release;Platform=x64
+msbuild /target:Build SurgeEffectsBank.sln /p:Configuration=ReleaseWin32;Platform=Win32
 
 
 
