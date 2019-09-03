@@ -17,7 +17,7 @@
 //==============================================================================
 /**
 */
-class SurgefxAudioProcessorEditor  : public AudioProcessorEditor
+class SurgefxAudioProcessorEditor  : public AudioProcessorEditor, AsyncUpdater
 {
 public:
     SurgefxAudioProcessorEditor (SurgefxAudioProcessor&);
@@ -30,6 +30,8 @@ public:
     void paramsChangedCallback();
     void setEffectType(int i);
 
+    virtual void handleAsyncUpdate() override;
+    
     enum RadioGroupIds {
         FxTypeGroup = 1776
     };
