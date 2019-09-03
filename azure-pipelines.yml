@@ -63,7 +63,7 @@ jobs:
 
   - task: MSBuild@1
     inputs:
-      solution: 'Builds\VisualStudio2017\surge-fx.sln'
+      solution: 'Builds\VisualStudio2017\SurgeEffectsBank.sln'
       maximumCpuCount: true
       platform: 'x64'
       configuration: 'Release'
@@ -73,9 +73,9 @@ jobs:
   - bash: |
       cd Builds/VisualStudio2017/x64
       mkdir assets
-      mv Release/Standalone\ Plugin/surge-fx.exe assets/
-      mv Release/VST3/surge-fx.vst3 assets/
-      7z.exe a ../../../products/surge-fx-win.zip assets 
+      mv Release/Standalone\ Plugin/SurgeEffectsBank.exe assets/
+      mv Release/VST3/SurgeEffectsBank.vst3 assets/
+      7z.exe a ../../../products/surge-effects-bank-win.zip assets 
     displayName: Build Windows Zip
     condition: variables.isWindows
 
@@ -88,7 +88,7 @@ jobs:
 
   - task: MSBuild@1
     inputs:
-      solution: 'Builds\VisualStudio2017\surge-fx.sln'
+      solution: 'Builds\VisualStudio2017\SurgeEffectsBank.sln'
       maximumCpuCount: true
       platform: 'Win32'
       configuration: 'ReleaseWin32'
@@ -98,9 +98,9 @@ jobs:
   - bash: |
       cd Builds/VisualStudio2017/Win32
       mkdir assets
-      mv ReleaseWin32/Standalone\ Plugin/surge-fx.exe assets/
+      mv ReleaseWin32/Standalone\ Plugin/SurgeEffectsBank.exe assets/
       mv ReleaseWin32/VST3/surge-fx.vst3 assets/
-      7z.exe a ../../../products/surge-fx-win-32.zip assets 
+      7z.exe a ../../../products/surge-effects-bank-win-32.zip assets 
     displayName: Build Windows32 Zip
     condition: variables.isWindows32
 

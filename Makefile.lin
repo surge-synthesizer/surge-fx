@@ -29,7 +29,7 @@ build:	Builds/LinuxMakefile/Makefile
 
 zip: build
 	mkdir -p products/surge-fx
-	cp Builds/LinuxMakefile/build/surge-fx products/surge-fx
+	cp Builds/LinuxMakefile/build/SurgeEffectsBank products/surge-fx
 	cd products && tar cvzf surge-fx-$(SURGE_FX_VERSION)-$(BUILDDATE).tar.gz surge-fx
 	rm -rf products/surge-fx
 

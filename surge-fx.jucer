@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="wrl6Y0" name="surge-fx" projectType="audioplug" jucerVersion="5.4.3"
+<JUCERPROJECT id="wrl6Y0" name="SurgeEffectsBank" projectType="audioplug" jucerVersion="5.4.3"
               companyName="Surge Synth Team" companyCopyright="Copyright Various Authors, 2019"
               companyWebsite="https://surge-synthesizer.github.io/" pluginManufacturerCode="VmbA"
-              pluginCode="SGFX" pluginFormats="buildAU,buildStandalone,buildVST3">
-  <MAINGROUP id="cR50fn" name="surge-fx">
+              pluginCode="SFXB" pluginFormats="buildAU,buildStandalone,buildVST3">
+  <MAINGROUP id="cR50fn" name="SurgeEffectsBank">
     <GROUP id="{55EE2475-B339-9B2B-B553-4D5F86AA5924}" name="surge">
       <GROUP id="{3465AAA3-E150-030D-1085-66D9F3951410}" name="resources">
         <FILE id="avE3lY" name="configuration.xml" compile="0" resource="1"
