@@ -99,7 +99,7 @@ jobs:
       cd Builds/VisualStudio2017/Win32
       mkdir assets
       mv ReleaseWin32/Standalone\ Plugin/SurgeEffectsBank.exe assets/
-      mv ReleaseWin32/VST3/surge-fx.vst3 assets/
+      mv ReleaseWin32/VST3/SurgeEffectsBank.vst3 assets/
       7z.exe a ../../../products/surge-effects-bank-win-32.zip assets 
     displayName: Build Windows32 Zip
     condition: variables.isWindows32
