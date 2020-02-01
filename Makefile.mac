@@ -25,6 +25,9 @@ Builds/MacOSX/build/Release/libSurgeEffectsBank.a: Builds/MacOSX/SurgeEffectsBan
 build:	Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj 
 	xcodebuild build -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
 
+build-sa:	Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj 
+	xcodebuild build -target "SurgeEffectsBank - Standalone Plugin" -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
+
 build-au:	Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj 
 	xcodebuild build -target "SurgeEffectsBank - AU" -configuration Release -project Builds/MacOSX/SurgeEffectsBank.xcodeproj
 
