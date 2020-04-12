@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<JUCERPROJECT id="wrl6Y0" name="SurgeEffectsBank" projectType="audioplug" jucerVersion="5.4.3"
+<JUCERPROJECT id="wrl6Y0" name="SurgeEffectsBank" projectType="audioplug" jucerVersion="5.4.7"
               companyName="Surge Synth Team" companyCopyright="Copyright Various Authors, 2019"
               companyWebsite="https://surge-synthesizer.github.io/" pluginManufacturerCode="VmbA"
               pluginCode="SFXB" pluginFormats="buildAU,buildStandalone,buildVST3">
@@ -69,6 +69,8 @@
               <FILE id="W550Xd" name="Effect.cpp" compile="1" resource="0" file="deps/surge/src/common/dsp/effect/Effect.cpp"/>
               <FILE id="O3fOQc" name="Effect.h" compile="0" resource="0" file="deps/surge/src/common/dsp/effect/Effect.h"/>
               <FILE id="rzTyE9" name="effect_defs.h" compile="0" resource="0" file="deps/surge/src/common/dsp/effect/effect_defs.h"/>
+              <FILE id="gUIYb0" name="FlangerEffect.cpp" compile="1" resource="0"
+                    file="deps/surge/src/common/dsp/effect/FlangerEffect.cpp"/>
               <FILE id="ua8sXD" name="FreqshiftEffect.cpp" compile="1" resource="0"
                     file="deps/surge/src/common/dsp/effect/FreqshiftEffect.cpp"/>
               <FILE id="lOwWuu" name="PhaserEffect.cpp" compile="1" resource="0"

@@ -11,7 +11,7 @@ jobs:
   strategy:
     matrix:
       mac:
-        imageName: 'macos-10.13'
+        imageName: 'macos-10.14'
         isMac: True
       win:
         imageName: 'vs2017-win2016'
@@ -53,9 +53,9 @@ jobs:
   - bash: |
       mkdir assets
       mkdir products
-      curl -o assets/juce-5.4.3-windows.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.3-windows.zip   
+      curl -o assets/juce-5.4.7-windows.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.7-windows.zip   
       cd assets
-      unzip juce-5.4.3-windows.zip
+      unzip juce-5.4.7-windows.zip
       cd ..
       assets/JUCE/Projucer.exe --resave surge-fx.jucer   
     displayName: Build Windows sln file

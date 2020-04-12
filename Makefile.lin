@@ -9,13 +9,13 @@ all: build
 assets:
 	mkdir -p assets
 
-assets/juce-5.4.3-linux.zip:
-	curl -o assets/juce-5.4.3-linux.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.3-linux.zip
-	curl -o assets/juce-5.4.3-gcc9.patch https://github.com/WeAreROLI/JUCE/commit/4e0adb2af8b424c43d22bd431011c9a6c57d36b6.patch
-	cd assets && unzip juce-5.4.3-linux.zip
-	patch -N -p1 -d assets/JUCE -i ../juce-5.4.3-gcc9.patch
+assets/juce-5.4.7-linux.zip:
+	curl -o assets/juce-5.4.7-linux.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.7-linux.zip
+	#curl -o assets/juce-5.4.7-gcc9.patch https://github.com/WeAreROLI/JUCE/commit/4e0adb2af8b424c43d22bd431011c9a6c57d36b6.patch
+	cd assets && unzip juce-5.4.7-linux.zip
+	#patch -N -p1 -d assets/JUCE -i ../juce-5.4.7-gcc9.patch
 
-assets/JUCE: assets assets/juce-5.4.3-linux.zip
+assets/JUCE: assets assets/juce-5.4.7-linux.zip
 
 Builds/LinuxMakefile/Makefile:	assets/JUCE surge-fx.jucer
 	./scripts/vst_jucer.sh > /tmp/surge-fx.jucer

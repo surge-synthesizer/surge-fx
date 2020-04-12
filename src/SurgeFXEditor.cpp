@@ -11,6 +11,12 @@
 #include "SurgeFXProcessor.h"
 #include "SurgeFXEditor.h"
 
+static std::vector<std::string> fxnm =
+  { "delay", "reverb", "reverb2", "phaser", "flanger", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco", "flanger" };
+static std::vector<int> fxt =
+  { fxt_delay, fxt_reverb, fxt_reverb2, fxt_phaser, fxt_flanger, fxt_rotaryspeaker, fxt_distortion, fxt_eq, fxt_freqshift, fxt_conditioner, fxt_chorus4,
+    fxt_vocoder };
+
 //==============================================================================
 SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor& p)
     : AudioProcessorEditor (&p), processor (p)
@@ -74,21 +80,20 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         
         addAndMakeVisible(fxParamDisplay[i]);
     }
-
-    std::vector<std::string> fxnm = { "delay", "reverb", "phaser", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco" };
+    
     int en = processor.getEffectType() - 1;
-    for( int i=0; i<10; ++i )
+    for( int i=0; i<12; ++i )
     {
         selectType[i].setButtonText(fxnm[i]);
-        int bxsz = (getWidth()-20)/5;
+        int bxsz = (getWidth()-20)/6;
         int bxmg = 10;
         int bysz = 40;
         int bymg = 10;
-        juce::Rectangle<int> bpos { ( i % 5 ) * bxsz + bxmg, (i/5) * bysz + bymg, bxsz, bysz };
+        juce::Rectangle<int> bpos { ( i % 6 ) * bxsz + bxmg, (i/6) * bysz + bymg, bxsz, bysz };
         selectType[i].setRadioGroupId(FxTypeGroup);
         selectType[i].setBounds(bpos);
         selectType[i].setClickingTogglesState(true);
-        selectType[i].onClick = [this,i] { this->setEffectType(i+1); };
+        selectType[i].onClick = [this,i] { this->setEffectType(fxt[i]); };
         if( i == en )
         {
             selectType[i].setToggleState(true,  NotificationType::dontSendNotification);
@@ -159,9 +164,9 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
 
 void SurgefxAudioProcessorEditor::blastToggleState(int w)
 {
-    for( auto i=0; i<10; ++i )
+    for( auto i=0; i<12; ++i )
     {
-        selectType[i].setToggleState( i == w, NotificationType::dontSendNotification );
+        selectType[i].setToggleState( fxt[i] == w + 1, NotificationType::dontSendNotification );
     }
 }
 

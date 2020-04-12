@@ -9,11 +9,11 @@ all: build
 assets:
 	mkdir -p assets
 
-assets/juce-5.4.3-osx.zip:
-	curl -o assets/juce-5.4.3-osx.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.3-osx.zip
-	cd assets && unzip juce-5.4.3-osx.zip
+assets/juce-5.4.7-osx.zip:
+	curl -o assets/juce-5.4.7-osx.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.7-osx.zip
+	cd assets && unzip juce-5.4.7-osx.zip
 
-assets/JUCE: assets assets/juce-5.4.3-osx.zip
+assets/JUCE: assets assets/juce-5.4.7-osx.zip
 
 Builds/MacOSX/SurgeEffectsBank.xcodeproj/projects.pbxproj:	assets/JUCE surge-fx.jucer
 	assets/JUCE/Projucer.app/Contents/MacOS/Projucer --resave surge-fx.jucer
