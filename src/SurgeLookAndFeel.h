@@ -5,7 +5,7 @@
 class SurgeLookAndFeel : public LookAndFeel_V4
 {
 private:
-    ScopedPointer<Drawable> surgeLogo;
+    std::unique_ptr<Drawable> surgeLogo;
 
 public:
 
@@ -99,7 +99,7 @@ public:
         auto toAngle = rotaryStartAngle + sliderPos * (rotaryEndAngle - rotaryStartAngle);
         auto thumbWidth = 5;
 
-        Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
+        juce::Point<float> thumbPoint (bounds.getCentreX() + arcRadius * std::cos (toAngle - MathConstants<float>::halfPi),
                                  bounds.getCentreY() + arcRadius * std::sin (toAngle - MathConstants<float>::halfPi));
         
         g.setColour (tick);

@@ -44,7 +44,7 @@ private:
     SurgeFXParamDisplay fxParamDisplay[n_fx_params];
     SurgeTempoSyncSwitch fxTempoSync[n_fx_params];
     
-    TextButton selectType[10]; // this had better match the list of fxnames in the constructor
+    TextButton selectType[12]; // this had better match the list of fxnames in the constructor
     Slider fxTypeSlider;
 
     void blastToggleState(int i);
