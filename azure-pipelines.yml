@@ -31,120 +31,87 @@ jobs:
     fetchDepth: 1
     # submodules: recursive # can't do submodules here b'cuz depth=1 fails with Github
 
+  - bash: |
+      sudo apt-get update
+      sudo apt-get install -y libgtk-3-dev
+      sudo apt-get install -y libwebkit2gtk-4.0
+      sudo apt-get install -y libwebkit2gtk-4.0-dev
+      sudo apt-get install -y libcurl4-openssl-dev
+      sudo apt-get install -y alsa
+      sudp apt-get install -y alsa-tools
+      sudo apt-get install -y libasound2-dev
+      sudo apt-get install -y jack
+      sudo apt-get install -y libjack-dev
+      sudo apt-get install -y libfreetype6-dev
+      sudo apt-get install -y libxinerama-dev
+      sudo apt-get install -y libxcb-xinerama0
+      sudo apt-get install -y libxinerama1
+      sudo apt-get install -y x11proto-xinerama-dev
+      sudo apt-get install -y libxrandr-dev
+      sudo apt-get install -y libgl1-mesa-dev
+      sudo apt-get install -y libxcursor-dev 
+      sudo apt-get install -y libxcursor1 
+      sudo apt-get install -y libxcb-cursor-dev 
+      sudo apt-get install -y libxcb-cursor0
+      sudo apt-get install -y --fix-missing
+
+      apt list --installed
+
+      find /usr/include -name "asoundlib.h" -print
+    displayName: Prepare Linux Host
+    condition: variables.isLinux
 
   - bash: |
       git submodule update --init --recursive
     displayName: Get Surge SubModule
 
-  - bash: |
-      make -f Makefile.mac dmg
-      mkdir products/
-      mv *dmg products
-    displayName: Build Mac Plugins
+  - bash:
+      cmake -Bbuild
+    displayName: cmake (win and lin)
+    condition: or( variables.isWindows, variables.isLinux )
+
+  - bash:
+      cmake -Bbuild -A Win32
+    displayName: cmake (win32)
+    condition: variables.isWindows32
+
+  - bash:
+      cmake -Bbuild -GXcode
+    displayName: cmake (mac)
     condition: variables.isMac
+
+  - bash: |
+      cmake --build build --config Release --target installer-pkg
+    displayName: Build
+
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'MACOS_BUILD'
-      targetPath: 'products/'
+      targetPath: 'build/asset/'
     displayName: Publish Mac DMG
     condition: variables.isMac
 
-  - bash: |
-      mkdir assets
-      mkdir products
-      curl -o assets/juce-5.4.7-windows.zip https://d30pueezughrda.cloudfront.net/juce/juce-5.4.7-windows.zip   
-      cd assets
-      unzip juce-5.4.7-windows.zip
-      cd ..
-      assets/JUCE/Projucer.exe --resave surge-fx.jucer   
-    displayName: Build Windows sln file
-    condition: or(variables.isWindows, variables.isWindows32)
-
-  - task: MSBuild@1
-    inputs:
-      solution: 'Builds\VisualStudio2017\SurgeEffectsBank.sln'
-      maximumCpuCount: true
-      platform: 'x64'
-      configuration: 'Release'
-    condition: variables.isWindows
-    displayName: Build Windows x64
-
-  - bash: |
-      cd Builds/VisualStudio2017/x64
-      mkdir assets
-      mv Release/Standalone\ Plugin/SurgeEffectsBank.exe assets/
-      mv Release/VST3/SurgeEffectsBank.vst3 assets/
-      7z.exe a ../../../products/surge-effects-bank-win.zip assets 
-    displayName: Build Windows Zip
-    condition: variables.isWindows
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'WINDOWS_BUILD'
-      targetPath: 'products/'
+      targetPath: 'build/asset/'
     displayName: Publish Windows Zip
     condition: variables.isWindows
-
-  - task: MSBuild@1
-    inputs:
-      solution: 'Builds\VisualStudio2017\SurgeEffectsBank.sln'
-      maximumCpuCount: true
-      platform: 'Win32'
-      configuration: 'ReleaseWin32'
-    condition: variables.isWindows32
-    displayName: Build Windows Win32
-
-  - bash: |
-      cd Builds/VisualStudio2017/Win32
-      mkdir assets
-      mv ReleaseWin32/Standalone\ Plugin/SurgeEffectsBank.exe assets/
-      mv ReleaseWin32/VST3/SurgeEffectsBank.vst3 assets/
-      7z.exe a ../../../products/surge-effects-bank-win-32.zip assets 
-    displayName: Build Windows32 Zip
-    condition: variables.isWindows32
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'WINDOWS32_BUILD'
-      targetPath: 'products/'
+      targetPath: 'build/asset/'
     displayName: Publish Windows32 Zip
     condition: variables.isWindows32
-
-
-  - bash: |
-      # This is so close to working. But I don't find curl and I don't find freetype in incluldes.
-      set -x
-      suto apt-get update
-      sudo apt-get install -y libwebkit2gtk-4.0
-      sudo apt-get install -y libcurl4-openssl-dev
-      sudo apt-get install -y alsa-base
-      sudo apt-get install -y libasound2-dev
-      sudo apt-get install -y jack
-      sudo apt-get install -y libjack-dev
-      sudo apt-get install -y libfreetype6-dev
-      sudo apt-get install -y libgl1-mesa-dev
-
-      # OK so what the heck is going on
-      echo "===PKG CONFIGS==="
-      pkg-config --cflags freetype2
-      pkg-config --cflags libcurl
-      ls -al /usr/include/freetype2
-      
-      Xvfb :9898 &
-      export DISPLAY=:9898
-      sleep 3 # give xvfb some time to start
-
-
-      make -k -f Makefile.lin zip
-    displayName: Build Linux Standalone
-    condition: variables.isLinux
 
   - task: PublishPipelineArtifact@0
     inputs:
       artifactName: 'LINUX_BUILD'
-      targetPath: 'products/'
-    displayName: Publish Linux tgz
+      targetPath: 'build/asset'
+    displayName: Publish Linux Tar
     condition: variables.isLinux
 
 
