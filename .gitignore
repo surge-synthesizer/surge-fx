@@ -1,3 +1,7 @@
 Builds/
 JuceLibraryCode/
 assets/
+build/
+buildmac/
+buildlin/
+buildwin/
