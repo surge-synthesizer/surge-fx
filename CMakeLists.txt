@@ -197,12 +197,42 @@ endif()
 
 # Build installers
 get_target_property( OUTPUT_DIR surge-fx RUNTIME_OUTPUT_DIRECTORY )
+add_custom_target( well-named-assets )
+if( APPLE )
+  add_custom_target( well-named-au )
+  add_dependencies( well-named-au surge-fx_AU )
+  add_dependencies( well-named-assets well-named-au )
+endif()
+add_custom_target( well-named-vst3 )
+add_dependencies( well-named-vst3 surge-fx_VST3 )
+add_dependencies( well-named-assets well-named-vst3 )
+
 add_custom_target( installer-pkg )
+add_dependencies( installer-pkg well-named-vst3 )
 add_dependencies( installer-pkg surge-fx )
 add_dependencies( installer-pkg surge-fx_Standalone )
 add_dependencies( installer-pkg surge-fx_VST3 )
 set( INSTALLER_DIR ${CMAKE_BINARY_DIR}/asset )
+set( WELL_NAMED_ASSET_DIR ${CMAKE_BINARY_DIR}/product )
 set( INSTALLER_BASENAME "SurgeEffectsBank" )
+
+add_custom_command(
+  TARGET well-named-vst3
+  POST_BUILD
+  WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+  COMMAND ${CMAKE_COMMAND} -E make_directory  ${WELL_NAMED_ASSET_DIR}
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${OUTPUT_DIR}/VST3 ${WELL_NAMED_ASSET_DIR}
+  )
+
+if( APPLE )
+  add_custom_command(
+    TARGET well-named-au
+    POST_BUILD
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+    COMMAND ${CMAKE_COMMAND} -E make_directory  ${WELL_NAMED_ASSET_DIR}
+    COMMAND ${CMAKE_COMMAND} -E copy_directory ${OUTPUT_DIR}/AU ${WELL_NAMED_ASSET_DIR}
+  )
+endif()
 
 if( APPLE )
   add_custom_command(

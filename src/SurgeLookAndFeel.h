@@ -1,6 +1,7 @@
 // -*- mode: c++-mode -*-
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "version.h"
 
 class SurgeLookAndFeel : public LookAndFeel_V4
 {
@@ -160,6 +161,11 @@ public:
         
         g.setColour(findColour(SurgeColourIds::blue));
         g.drawLine(0,h-orangeHeight,w,h-orangeHeight);
+        // text
+        g.setFont(12);
+        g.drawSingleLineText( Build::git_commit_hash, 3, h - 6.f, juce::Justification::centredLeft );
+        g.drawSingleLineText( Build::build_date, w - 3, h - 6.f, juce::Justification::centredRight );
+
     }
     
 };
