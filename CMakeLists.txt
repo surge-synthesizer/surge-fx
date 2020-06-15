@@ -28,8 +28,8 @@ juce_add_plugin(surge-fx
     PLUGIN_MANUFACTURER_CODE VmbA
     PLUGIN_CODE SFXB
 
-    IS_SYNTH TRUE
-    NEEDS_MIDI_INPUT TRUE
+    IS_SYNTH FALSE
+    NEEDS_MIDI_INPUT FALSE
     NEEDS_MIDI_OUTPUT FALSE
     IS_MIDI_EFFECT FALSE
     
@@ -91,6 +91,7 @@ target_sources(surge-fx PRIVATE
   deps/surge/src/common/dsp/effect/PhaserEffect.cpp
   deps/surge/src/common/dsp/effect/Reverb1Effect.cpp
   deps/surge/src/common/dsp/effect/Reverb2Effect.cpp
+  deps/surge/src/common/dsp/effect/RingModulatorEffect.cpp
   deps/surge/src/common/dsp/effect/RotarySpeakerEffect.cpp
   deps/surge/src/common/dsp/effect/VocoderEffect.cpp
   deps/surge/src/common/dsp/AdsrEnvelope.cpp
@@ -156,6 +157,39 @@ target_link_libraries(surge-fx PRIVATE
     juce::juce_audio_utils
     juce::juce_audio_processors
 )
+
+include(CheckCXXSymbolExists)
+CHECK_CXX_SYMBOL_EXISTS(std::filesystem::path::preferred_separator "filesystem" CXX_STD_FS)
+if( CXX_STD_FS )
+  set( FS_COMPILE_DEFINITIONS USE_STD_FILESYSTEM=1 )
+  message( STATUS "Using std::filesystem" )
+else()
+  if( UNIX AND NOT APPLE )
+    set (CMAKE_REQUIRED_FLAGS "-std=c++11")
+    set (CMAKE_REQUIRED_LIBRARIES "stdc++fs")
+  endif()
+  CHECK_CXX_SYMBOL_EXISTS(std::experimental::filesystem::path::preferred_separator "experimental/filesystem" CXX_EXP_STD_FS)
+  if( UNIX AND NOT APPLE )
+    set (CMAKE_REQUIRED_FLAGS "")
+    set (CMAKE_REQUIRED_LIBRARIES "")
+  endif()
+
+  if( CXX_EXP_STD_FS )
+    set( FS_COMPILE_DEFINITIONS USE_STD_EXPERIMENTAL_FILESYSTEM=1 )
+    message( STATUS "Using std::experimental::filesystem" )
+  else()
+    CHECK_CXX_SYMBOL_EXISTS(std::experimental::filesystem::path::preferred_separator "filesystem" CXX_EXP_STD_FS_FS_HDR)
+    if( CXX_EXP_STD_FS_FS_HDR )
+      set( FS_COMPILE_DEFINITIONS USE_STD_EXPERIMENTAL_FILESYSTEM_FROM_FILESYSTEM=1 )
+      message( STATUS "Using std::experimental::filesystem but from <filesystem> header" )
+    else()
+      set( FS_COMPILE_DEFINITIONS USE_HOMEGROWN_FILESYSTEM=1 )
+      message( STATUS "Using homegrown filesystem" )
+    endif()
+  endif()
+endif()
+
+target_compile_definitions(surge-fx PUBLIC ${FS_COMPILE_DEFINITIONS} )
 
 if( APPLE )
   target_compile_definitions( surge-fx PUBLIC
