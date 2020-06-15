@@ -12,7 +12,7 @@
 #include "SurgeFXEditor.h"
 
 static std::vector<std::string> fxnm =
-  { "delay", "reverb", "reverb2", "phaser", "flanger", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco", "flanger" };
+  { "delay", "reverb", "reverb2", "phaser", "flanger", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco"  };
 static std::vector<int> fxt =
   { fxt_delay, fxt_reverb, fxt_reverb2, fxt_phaser, fxt_flanger, fxt_rotaryspeaker, fxt_distortion, fxt_eq, fxt_freqshift, fxt_conditioner, fxt_chorus4,
     fxt_vocoder };
@@ -81,7 +81,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         addAndMakeVisible(fxParamDisplay[i]);
     }
     
-    int en = processor.getEffectType() - 1;
+    int en = processor.getEffectType();
     for( int i=0; i<12; ++i )
     {
         selectType[i].setButtonText(fxnm[i]);
@@ -94,7 +94,7 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
         selectType[i].setBounds(bpos);
         selectType[i].setClickingTogglesState(true);
         selectType[i].onClick = [this,i] { this->setEffectType(fxt[i]); };
-        if( i == en )
+        if( fxt[i] == en )
         {
             selectType[i].setToggleState(true,  NotificationType::dontSendNotification);
         }
