@@ -45,7 +45,7 @@ SurgefxAudioProcessor::SurgefxAudioProcessor()
         addParameter(fxParams[i] = new AudioParameterFloat(lb, nm, 0.f, 1.f, fxstorage->p[fx_param_remap[i]].get_value_f01() ) );
         fxBaseParams[i] = fxParams[i];
     }
-    addParameter(fxType = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_flanger, effectNum ));
+    addParameter(fxType = new AudioParameterInt("fxtype", "FX Type", fxt_delay, fxt_ringmod, effectNum ));
     fxBaseParams[n_fx_params] = fxType;
 
     for( int i=0; i<n_fx_params; ++i )

@@ -12,10 +12,19 @@
 #include "SurgeFXEditor.h"
 
 static std::vector<std::string> fxnm =
-  { "delay", "reverb", "reverb2", "phaser", "flanger", "rotary", "dist", "eq", "freq", "cond", "chorus", "voco"  };
+{ 
+  "chorus", "flanger", "phaser", "rotary",
+  "delay", "reverb1", "reverb2",
+
+  "eq", "dist", "cond", "freq", "ring", "voco",
+};
 static std::vector<int> fxt =
-  { fxt_delay, fxt_reverb, fxt_reverb2, fxt_phaser, fxt_flanger, fxt_rotaryspeaker, fxt_distortion, fxt_eq, fxt_freqshift, fxt_conditioner, fxt_chorus4,
-    fxt_vocoder };
+{ 
+  fxt_chorus4, fxt_flanger, fxt_phaser, fxt_rotaryspeaker,
+  fxt_delay, fxt_reverb, fxt_reverb2,
+
+  fxt_eq, fxt_distortion, fxt_conditioner, fxt_freqshift, fxt_ringmod, fxt_vocoder,
+};
 
 //==============================================================================
 SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor& p)
@@ -82,14 +91,15 @@ SurgefxAudioProcessorEditor::SurgefxAudioProcessorEditor (SurgefxAudioProcessor&
     }
     
     int en = processor.getEffectType();
-    for( int i=0; i<12; ++i )
+    int buttonsPerRow = 7;
+    for( int i=0; i<n_fx; ++i )
     {
         selectType[i].setButtonText(fxnm[i]);
-        int bxsz = (getWidth()-20)/6;
+        int bxsz = (getWidth()-20)/buttonsPerRow;
         int bxmg = 10;
         int bysz = 40;
         int bymg = 10;
-        juce::Rectangle<int> bpos { ( i % 6 ) * bxsz + bxmg, (i/6) * bysz + bymg, bxsz, bysz };
+        juce::Rectangle<int> bpos { ( i % buttonsPerRow ) * bxsz + bxmg, (i/buttonsPerRow) * bysz + bymg, bxsz, bysz };
         selectType[i].setRadioGroupId(FxTypeGroup);
         selectType[i].setBounds(bpos);
         selectType[i].setClickingTogglesState(true);
@@ -164,7 +174,7 @@ void SurgefxAudioProcessorEditor::paramsChangedCallback() {
 
 void SurgefxAudioProcessorEditor::blastToggleState(int w)
 {
-    for( auto i=0; i<12; ++i )
+    for( auto i=0; i<n_fx; ++i )
     {
         selectType[i].setToggleState( fxt[i] == w + 1, NotificationType::dontSendNotification );
     }
