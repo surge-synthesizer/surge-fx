@@ -287,14 +287,14 @@ elseif( UNIX )
     )
 else()
   file( TO_NATIVE_PATH "${INSTALLER_DIR}/${INSTALLER_BASENAME}-win-${GIT_COMMIT_HASH}.zip" OUTPUT_ZIP )
-  message( "Creating ${OUTPUT_ZIP}" )
+  message( STATUS "Final product will be  ${OUTPUT_ZIP} from ${WELL_NAMED_ASSET_DIR}" )
   add_custom_command(
     TARGET installer-pkg
     POST_BUILD
-    WORKING_DIRECTORY ${OUTPUT_DIR}
+    WORKING_DIRECTORY ${WELL_NAMED_ASSET_DIR}
     COMMAND ${CMAKE_COMMAND} -E make_directory  ${INSTALLER_DIR}
     COMMAND powershell Compress-Archive 
              -DestinationPath "${OUTPUT_ZIP}"
-             -Path "Standalone" "," "VST3" 
+             -Path "."
     )
 endif()
